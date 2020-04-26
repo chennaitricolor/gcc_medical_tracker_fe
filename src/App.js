@@ -11,8 +11,6 @@ function App() {
     setSelectedTab(newSelection);
   };
 
-  console.log('title', titleConstants);
-
   return (
       <div>
         <HeaderComponent title={titleConstants.dashboardTitle}

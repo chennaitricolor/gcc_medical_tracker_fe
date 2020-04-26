@@ -12,7 +12,7 @@ import Routes from './utils/routes';
 const theme = createMuiTheme({
     typography: {
         useNextVariants: true,
-        fontFamily: ['Roboto'].join(','),
+        //fontFamily: ['Roboto'].join(','),
         font: {
             color: '#333940',
         },
