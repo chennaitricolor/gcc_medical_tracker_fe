@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import {titleConstants} from './utils/constants';
+import HeaderComponent from "./components/HeaderComponent";
+import DashboardContainer from "./containers/DashboardContainer";
 
 function App() {
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const handleTabChange = (event, newSelection) => {
+    setSelectedTab(newSelection);
+  };
+
+  console.log('title', titleConstants);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div>
+        <HeaderComponent title={titleConstants.dashboardTitle}
+                     selectedTab={selectedTab}
+                     handleTabChange={handleTabChange}
+        />
+        <DashboardContainer selectedTab={selectedTab}/>
+      </div>
   );
 }
 
 export default App;
+
