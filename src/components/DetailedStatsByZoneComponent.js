@@ -71,6 +71,10 @@ export const DetailedStatsByZoneComponent = props => {
     const classes = useStyles();
     const {handleSearchTextChange, handleFilterChange} = props;
 
+    const getWardsList = (wards) => {
+        return (wards !== undefined && wards.length > 0) ? wards.map(ward => 'W' + ward) : [];
+    }
+
     return (
         <div className={classes.root}>
             <Grid container spacing={0} className={classes.grid}>
@@ -82,48 +86,24 @@ export const DetailedStatsByZoneComponent = props => {
                     </Card>
                     <Paper className={classes.paper}>
                         <List>
-                            <ListItem
-                                key={1}
-                                role={undefined}
-                                button
-                                className={classes.selectedListItem}
-                                selected={true}
-                            >
-                                <ListItemText
-                                    id={1}
-                                    primary={
-                                        <Typography style={{ float: 'left', paddingLeft: '10px' }}>{'W1 - Kargil Nagar'}</Typography>
-                                    }
-                                />
-                            </ListItem>
-                            <ListItem
-                                key={2}
-                                role={undefined}
-                                button
-                                className={classes.unSelectedItem}
-                                selected={false}
-                            >
-                                <ListItemText
-                                    id={2}
-                                    primary={
-                                        <Typography style={{ float: 'left', paddingLeft: '10px' }}>{'W2 - Shanmugapuram extn'}</Typography>
-                                    }
-                                />
-                            </ListItem>
-                            <ListItem
-                                key={3}
-                                role={undefined}
-                                button
-                                className={classes.unSelectedItem}
-                                selected={false}
-                            >
-                                <ListItemText
-                                    id={3}
-                                    primary={
-                                        <Typography style={{ float: 'left', paddingLeft: '10px' }}>{'W3 - Sample Nagar'}</Typography>
-                                    }
-                                />
-                            </ListItem>
+                            {
+                                getWardsList(props.wardsList).map((ward, key) => {
+                                    return (<ListItem
+                                        key={key}
+                                        role={undefined}
+                                        button
+                                        className={classes.selectedListItem}
+                                        selected={true}
+                                    >
+                                        <ListItemText
+                                            id={key}
+                                            primary={
+                                                <Typography style={{ float: 'left', paddingLeft: '10px' }}>{ward}</Typography>
+                                            }
+                                        />
+                                    </ListItem>);
+                                })
+                            }
                         </List>
                     </Paper>
                 </Grid>
@@ -139,6 +119,7 @@ export const DetailedStatsByZoneComponent = props => {
 DetailedStatsByZoneComponent.propTypes = {
     handleSearchTextChange: PropTypes.func.isRequired,
     handleFilterChange: PropTypes.func.isRequired,
+    wardsList: PropTypes.array
 }
 
 export default DetailedStatsByZoneComponent;
