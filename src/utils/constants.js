@@ -13,3 +13,10 @@ export const statsComponentLabels = {
     dataMissing: 'DATA MISSING',
     symptomatic: 'SYMPTOMATIC'
 };
+
+export const apiUrls = {
+    login: '/medicaltracker/auth/login',
+    getZones: '/medicaltracker/dashboard/zones',
+    resetPassword: '/medicaltracker/auth/password'
+}
+

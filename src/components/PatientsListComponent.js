@@ -7,6 +7,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { Tooltip } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
     table: {
@@ -18,11 +20,11 @@ function createData(id, name, age, address, phone, trackingStatus, lastContacted
 }
 
 const rows = [
-    createData(1,'John Doe', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Recovered'),
-    createData(2, 'John Doe', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Symptomatic'),
-    createData(3, 'John Doe', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Deceased'),
-    createData(4, 'John Doe', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Urgent'),
-    createData(5, 'John Doe', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Quarantine'),
+    createData(1,'Maalai Sachin', '58/M', '1, Sabari Nagar Extn 1212121212121212', '9884242323', '26-Mar-20', '07-Apr-20', 'Recovered'),
+    createData(2, 'Narendran Mohanasundaram', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Symptomatic'),
+    createData(3, 'Jegan R', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Deceased'),
+    createData(4, 'Riyaz A', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Urgent'),
+    createData(5, 'Nandhakumar S', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Quarantine'),
 ];
 
 const getStyleByPersonStatus = (personStatus) => {
@@ -64,10 +66,20 @@ const PatientsListComponent = (props) => {
                     {rows.map((row) => (
                         <TableRow key={row.id}>
                             <TableCell component="th" scope="row">
-                                {row.name}
+                                <Tooltip title={row.name} interactive>
+                                    <Typography style={{ float: 'left', width: '120px', textOverflow: 'ellipsis', overflow: 'hidden' }} noWrap>
+                                        {row.name}
+                                    </Typography>
+                                </Tooltip>
                             </TableCell>
                             <TableCell align="left">{row.age}</TableCell>
-                            <TableCell align="left">{row.address}</TableCell>
+                            <TableCell align="left">
+                                <Tooltip title={row.address} interactive>
+                                    <Typography style={{ float: 'left', width: '120px', textOverflow: 'ellipsis', overflow: 'hidden' }} noWrap>
+                                        {row.address}
+                                    </Typography>
+                                </Tooltip>
+                            </TableCell>
                             <TableCell align="left">{row.phone}</TableCell>
                             <TableCell align="left">{row.trackingStatus}</TableCell>
                             <TableCell align="left">{row.lastContacted}</TableCell>

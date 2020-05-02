@@ -3,7 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import * as PropTypes from 'prop-types';
+import TextField from '@material-ui/core/TextField';
+import { Tooltip } from '@material-ui/core';
 import { statsComponentLabels } from '../utils/constants';
 
 const useStyles = makeStyles({
@@ -32,7 +35,11 @@ const useStyles = makeStyles({
     zoneNameLabel: {
         fontWeight: 'bold',
         color: '#000000',
-        textTransform: 'upperCase'
+        textTransform: 'upperCase',
+        marginTop: '30px',
+        width: '150px',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden'
     },
     contactedCard: {
         fontSize: '50px',
@@ -57,18 +64,31 @@ const useStyles = makeStyles({
     },
 });
 
+const options = ['Zone 1', 'Zone 2', 'Zone 3'];
+
+
 export const StatsComponent = props => {
     const classes = useStyles();
     return (
         <div>
             <Card className={classes.card}>
                 <CardContent>
-                    <Typography variant="h3" component="h3" className={classes.zonesCard}>
-                        ZONE 4
-                    </Typography>
+                    <Autocomplete
+                        id="zone-select"
+                        options={options}
+                        getOptionLabel={(option) => option}
+                        style={{ width: '70%' }}
+                        renderInput={(params) => {
+
+                            return(<TextField {...params} label="Select Zone" InputProps={params.InputProps}/>);
+                        }
+                        }
+                    />
+                    <Tooltip title={'TIRUVOTRIYUR'} interactive>
                     <Typography color="textSecondary" className={classes.zoneNameLabel}>
                         TIRUVOTRIYUR
                     </Typography>
+                    </Tooltip>
                 </CardContent>
             </Card>
             <Card className={classes.card}>

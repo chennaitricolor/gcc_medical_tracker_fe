@@ -1,4 +1,5 @@
 import React from 'react';
+import * as PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -68,6 +69,7 @@ const useStyles = makeStyles(theme => ({
 
 export const DetailedStatsByZoneComponent = props => {
     const classes = useStyles();
+    const {handleSearchTextChange, handleFilterChange} = props;
 
     return (
         <div className={classes.root}>
@@ -126,12 +128,17 @@ export const DetailedStatsByZoneComponent = props => {
                     </Paper>
                 </Grid>
                 <Grid item xs={9} className={classes.grid}>
-                    <PatientsListHeaderComponent/>
+                    <PatientsListHeaderComponent handleFilterChange={handleFilterChange} handleSearchTextChange={handleSearchTextChange}/>
                     <PatientsListComponent/>
                 </Grid>
             </Grid>
         </div>
     );
 };
+
+DetailedStatsByZoneComponent.propTypes = {
+    handleSearchTextChange: PropTypes.func.isRequired,
+    handleFilterChange: PropTypes.func.isRequired,
+}
 
 export default DetailedStatsByZoneComponent;

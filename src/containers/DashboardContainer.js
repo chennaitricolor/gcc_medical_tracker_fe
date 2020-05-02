@@ -6,10 +6,18 @@ import DetailedStatsByZoneComponent from '../components/DetailedStatsByZoneCompo
 const DashboardContainer = (props) => {
     const { selectedTab } = props;
 
+    const handleSearchTextChange = () => {
+
+    };
+
+    const handleFilterChange = () => {
+
+    };
+
     if(selectedTab === 0)
         return (<div>
                 <StatsComponent liveCampaignsCount={1} totalEntriesCount={25} />
-                <DetailedStatsByZoneComponent/>
+                <DetailedStatsByZoneComponent handleSearchTextChange={handleSearchTextChange} handleFilterChange={handleFilterChange}/>
             </div>
             );
     else if(selectedTab === 1)

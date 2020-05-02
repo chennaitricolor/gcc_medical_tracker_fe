@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -55,9 +56,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function PatientsListHeaderComponent() {
+const PatientsListHeaderComponent = (props) => {
     const classes = useStyles();
     const [age, setAge] = useState(0);
+    const { handleSearchTextChange, handleFilterChange } = props;
     const handleChange = (event) => {
         setAge(event.target.value);
     };
@@ -76,6 +78,7 @@ export default function PatientsListHeaderComponent() {
                                 input: classes.inputInput,
                             }}
                             inputProps={{ 'aria-label': 'search' }}
+                            onChange={props.handleSearchTextChange}
                         />
                             <SearchIcon style={{paddingTop: '10px'}}/>
                     </div>
@@ -87,7 +90,7 @@ export default function PatientsListHeaderComponent() {
                                 label="Filter"
                                 disableUnderline
                                 IconComponent = {KeyboardArrowDownIcon}
-                                onChange={handleChange}
+                                onChange={handleFilterChange}
                                 className={classes.filterSelect}
                             >
                                 <MenuItem disabled value={0}>Filter</MenuItem>
@@ -101,3 +104,10 @@ export default function PatientsListHeaderComponent() {
         </div>
     );
 }
+
+PatientsListHeaderComponent.propTypes = {
+    handleSearchTextChange: PropTypes.func.isRequired,
+    handleFilterChange: PropTypes.func.isRequired,
+}
+
+export default PatientsListHeaderComponent;
