@@ -15,18 +15,6 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function createData(id, name, age, address, phone, trackingStatus, lastContacted, personStatus) {
-    return { id, name, age, address, phone, trackingStatus, lastContacted, personStatus };
-}
-
-const rows = [
-    createData(1,'Maalai Sachin', '58/M', '1, Sabari Nagar Extn 1212121212121212', '9884242323', '26-Mar-20', '07-Apr-20', 'Recovered'),
-    createData(2, 'Narendran Mohanasundaram', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Symptomatic'),
-    createData(3, 'Jegan R', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Deceased'),
-    createData(4, 'Riyaz A', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Urgent'),
-    createData(5, 'Nandhakumar S', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Quarantine'),
-];
-
 const getStyleByPersonStatus = (personStatus) => {
     const personStatusInLoweCase = personStatus.toLowerCase();
     switch(personStatusInLoweCase) {
@@ -47,6 +35,7 @@ const getStyleByPersonStatus = (personStatus) => {
 
 const PatientsListComponent = (props) => {
     const classes = useStyles();
+    const { personsList } = props;
 
     return (
         <TableContainer component={Paper} style={{marginLeft: '1%', marginRight: '1%', width: 'auto', marginTop: '2%'}}>
@@ -63,7 +52,7 @@ const PatientsListComponent = (props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody style={{marginTop: '1%'}}>
-                    {rows.map((row) => (
+                    {personsList.map((row) => (
                         <TableRow key={row.id}>
                             <TableCell component="th" scope="row">
                                 <Tooltip title={row.name} interactive>

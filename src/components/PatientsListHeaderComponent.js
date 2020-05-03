@@ -79,7 +79,7 @@ const PatientsListHeaderComponent = (props) => {
                                 input: classes.inputInput,
                             }}
                             inputProps={{ 'aria-label': 'search' }}
-                            onChange={props.handleSearchTextChange}
+                            onChange={handleSearchTextChange}
                         />
                             <SearchIcon style={{paddingTop: '10px'}}/>
                     </div>

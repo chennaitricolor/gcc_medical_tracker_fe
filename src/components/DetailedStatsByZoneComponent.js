@@ -69,7 +69,7 @@ const useStyles = makeStyles(theme => ({
 
 export const DetailedStatsByZoneComponent = props => {
     const classes = useStyles();
-    const {handleSearchTextChange, handleFilterChange} = props;
+    const {handleSearchTextChange, handleFilterChange, handleWardSelection, selectedWard, personsList} = props;
 
     const getWardsList = (wards) => {
         return (wards !== undefined && wards.length > 0) ? wards.map(ward => 'W' + ward) : [];
@@ -92,9 +92,9 @@ export const DetailedStatsByZoneComponent = props => {
                                         key={key}
                                         role={undefined}
                                         button
-                                        className={classes.selectedListItem}
-                                        selected={true}
-                                    >
+                                        className={(selectedWard === ward) ? classes.selectedListItem: classes.unSelectedItem}
+                                        selected={selectedWard === ward}
+                                        onClick={() => {handleWardSelection(ward);}}>
                                         <ListItemText
                                             id={key}
                                             primary={
@@ -109,7 +109,7 @@ export const DetailedStatsByZoneComponent = props => {
                 </Grid>
                 <Grid item xs={9} className={classes.grid}>
                     <PatientsListHeaderComponent handleFilterChange={handleFilterChange} handleSearchTextChange={handleSearchTextChange}/>
-                    <PatientsListComponent/>
+                    <PatientsListComponent personsList={personsList}/>
                 </Grid>
             </Grid>
         </div>
@@ -119,7 +119,10 @@ export const DetailedStatsByZoneComponent = props => {
 DetailedStatsByZoneComponent.propTypes = {
     handleSearchTextChange: PropTypes.func.isRequired,
     handleFilterChange: PropTypes.func.isRequired,
-    wardsList: PropTypes.array
+    wardsList: PropTypes.array,
+    handleWardSelection: PropTypes.func.isRequired,
+    selectedWard: PropTypes.string,
+    personsList: PropTypes.array
 }
 
 export default DetailedStatsByZoneComponent;

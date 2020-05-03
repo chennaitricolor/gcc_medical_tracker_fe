@@ -17,6 +17,7 @@ export const statsComponentLabels = {
 export const apiUrls = {
     login: '/medicaltracker/auth/login',
     getZones: '/medicaltracker/dashboard/zones',
-    resetPassword: '/medicaltracker/auth/password'
+    resetPassword: '/medicaltracker/auth/password',
+    getPersonsByWard: '/medicaltracker/dashboard/wards/'
 }
 
