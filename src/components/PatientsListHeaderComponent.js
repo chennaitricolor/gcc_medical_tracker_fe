@@ -9,6 +9,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import TravellerInformationContainer from "../containers/TravallerInformationContainer";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -100,6 +101,7 @@ const PatientsListHeaderComponent = (props) => {
                             </Select>
                     </div>
                 </Toolbar>
+                <TravellerInformationContainer/>
             </AppBar>
         </div>
     );

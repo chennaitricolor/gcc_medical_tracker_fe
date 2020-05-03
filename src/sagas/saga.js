@@ -1,4 +1,4 @@
-import { takeLatest, call } from 'redux-saga/effects';
+import { takeLatest } from 'redux-saga/effects';
 import loginActions from '../actions/LoginAction';
 import routesActions from '../actions/RouteToPathAction';
 import resetPasswordActions from '../actions/ResetPasswordAction';
