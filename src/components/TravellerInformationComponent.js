@@ -7,16 +7,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
-import MuiPhoneNumber from 'material-ui-phone-number';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import jsonPath from 'jsonpath-plus';
 import FormLabel from '@material-ui/core/FormLabel';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import { DatePicker } from '@material-ui/pickers';
+import { DatePicker } from "@material-ui/pickers";
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
+import InputMask from 'react-input-mask';
 
 const useStyles = makeStyles(() => ({
   heading: {
@@ -38,8 +38,8 @@ const useStyles = makeStyles(() => ({
     color: '#707070',
   },
   textField: {
+    margin: '0',
     marginRight: '2%',
-    marginTop: '1%',
     width: '300px',
 
     '& label': {
@@ -70,7 +70,6 @@ const useStyles = makeStyles(() => ({
   },
   phoneNumber: {
     marginRight: '2%',
-    marginTop: '1%',
     width: '300px',
     display: 'inline-block',
   },
@@ -88,7 +87,6 @@ const useStyles = makeStyles(() => ({
   },
   datePicker: {
     marginRight: '2%',
-    marginTop: '2%',
     width: '300px !important',
 
     '& label': {
@@ -108,6 +106,30 @@ const useStyles = makeStyles(() => ({
       width: '98%',
       height: '95%',
       color: '#707070',
+    },
+    '.traveller-information-travelledAbroad': {
+      display: 'inline-block',
+    },
+    '.traveller-information-diabetesIndicator': {
+      display: 'inline-block',
+    },
+    '.traveller-information-hyperTensionIndicator': {
+      display: 'inline-block',
+    },
+    '.traveller-information-remarks': {
+      width: '75%',
+    },
+    '.traveller-information-isSuspected': {
+      display: 'inline-block',
+    },
+    '.traveller-information-callSuccessFulIndicator': {
+      display: 'inline-block',
+    },
+    '.traveller-information-callFailureReason': {
+      display: 'inline-block',
+    },
+    '.traveller-information-healthStatus': {
+      display: 'inline-block',
     },
     '.traveller-information-visitedHospital': {
       display: 'inline-block',
@@ -129,8 +151,6 @@ const useStyles = makeStyles(() => ({
     },
   },
 }));
-
-const genderList = ['Male', 'Female'];
 
 const getStyleByPersonStatus = (personStatus) => {
   const personStatusInLoweCase = personStatus.toLowerCase();
@@ -208,23 +228,19 @@ function renderTextField(label, key, travellerInformation, handleOnChange, style
 
 function renderPhoneNumberField(label, key, travellerInformation, handleOnChange, styles, idx = null) {
   return (
-    <div className={styles.phoneNumber}>
-      <FormLabel style={{ marginTop: '1%' }} component="legend" className={'traveller-information-' + key}>
-        {label}
-      </FormLabel>
-      <MuiPhoneNumber
-        className={styles.phoneNumberField}
-        defaultCountry={'in'}
-        countryCodeEditable={false}
-        onChange={(value) => handleOnChange(value, key, 'phoneNumber', idx)}
-        value={jsonPath({
-          flatten: true,
-          json: travellerInformation,
-          path: key,
-          wrap: false,
-        })}
-      />
-    </div>
+    <InputMask
+      mask="9999999999"
+      maskChar={null}
+      value={jsonPath({
+        flatten: true,
+        json: travellerInformation,
+        path: key,
+        wrap: false,
+      })}
+      onChange={(value) => handleOnChange(value, key, 'text', idx)}
+    >
+      {() => <TextField id={key} variant={'outlined'} className={styles.textField} label={label} />}
+    </InputMask>
   );
 }
 
@@ -259,7 +275,7 @@ function renderDropDownField(label, key, dropdownList, travellerInformation, han
 
 function renderRadioButtonField(label, key, radioButtonList, travellerInformation, handleOnChange, styles, idx = null) {
   return (
-    <div className={'traveller-information-' + key} style={{ marginTop: '1%', marginRight: '2%' }}>
+    <div className={'traveller-information-' + key} style={{ marginRight: '2%' }}>
       <FormLabel style={{ marginTop: '1%' }} component="legend" className={'traveller-information-' + key + '-form-label' + ' ' + styles.radioButton}>
         {label}
       </FormLabel>
@@ -281,23 +297,31 @@ function renderRadioButtonField(label, key, radioButtonList, travellerInformatio
   );
 }
 
-function renderDateField(label, key, campaignDetails, handleOnChange, styles, idx = null) {
+function renderDateField(label, key, dateFormat, campaignDetails, handleOnChange, styles, idx = null) {
   return (
     <DatePicker
       className={'create-campaign-' + key + '-mui-pickers ' + styles.datePicker}
       key={'create-campaign-' + key + '-mui-pickers-key'}
       id={'create-campaign-' + key + '-mui-pickers'}
       label={label}
-      value={jsonPath({
-        flatten: true,
-        json: campaignDetails,
-        path: key,
-        wrap: false,
-      })}
-      onChange={(date) => handleOnChange(date, key, 'date', idx)}
-      disablePast
+      value={
+        jsonPath({
+          flatten: true,
+          json: campaignDetails,
+          path: key,
+          wrap: false,
+        }) !== undefined
+          ? jsonPath({
+              flatten: true,
+              json: campaignDetails,
+              path: key,
+              wrap: false,
+            })
+          : null
+      }
+      onChange={(date) => handleOnChange(date, key, 'date', idx, dateFormat)}
       placeholder="MM/DD/YYYY"
-      format={'MM/DD/YYYY'}
+      format={dateFormat}
       inputVariant="outlined"
       clearable
     />
@@ -306,19 +330,13 @@ function renderDateField(label, key, campaignDetails, handleOnChange, styles, id
 
 const matchStyleForDropdown = {
   width: '150px',
-  marginTop: '1%',
-  display: 'inline-block',
-};
-
-const matchStyleForCountryDropdown = {
-  width: '300px',
-  marginTop: '1%',
+  marginRight: '2%',
   display: 'inline-block',
 };
 
 const yesNoRadioButton = [
-  { label: 'Yes', value: 'yes' },
-  { label: 'No', value: 'no' },
+  { label: 'Yes', value: 'Y' },
+  { label: 'No', value: 'N' },
 ];
 
 const callFailureReasonRadioButton = [
@@ -327,17 +345,24 @@ const callFailureReasonRadioButton = [
   { label: 'Not Reachable', value: 'notReachable' },
 ];
 
-const personStatusRadioButton = [
-  { label: 'Symptomatic', value: 'symptomatic' },
-  { label: 'Quarantine', value: 'quarantine' },
-  { label: 'Recovered', value: 'recovered' },
+const personStatusRadioButton = [{ label: 'Quarantine', value: 'quarantined' }];
+
+const genderList = [
+  {
+    label: 'Male',
+    value: 'M',
+  },
+  {
+    label: 'Female',
+    value: 'F',
+  },
 ];
 
-const personCurrentlyStayingRadioButton = [
-  { label: 'Home/Hotel - Quarantine', value: 'home' },
-  { label: 'Hospital', value: 'hospital' },
-  { label: 'Travel(Other Locations)', value: 'travel' },
-];
+const answeredByList = ['Self', 'Family', 'Friends', 'Other'];
+
+const placeTypeList = ['Mall', 'Theater', 'Place Of Worship', 'Market', 'Others'];
+
+const modeOfTravelList = ['Car', 'Bike', 'Public Transport', 'Others'];
 
 const TravellerInformationComponent = (props) => {
   const styles = useStyles();
@@ -374,121 +399,202 @@ const TravellerInformationComponent = (props) => {
         </DialogTitle>
         <DialogContent>
           <div>
-            {renderTextField('Persons First Name', 'firstName', props.travellerInformationResponse, props.handleOnChange, styles)}
-            {renderTextField('Last Name', 'lastName', props.travellerInformationResponse, props.handleOnChange, styles)}
-            {renderTextField('Age', 'age', props.travellerInformationResponse, props.handleOnChange, styles)}
+            {renderTextField('Persons Name', 'name', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
+            {renderTextField('Age', 'age', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
             {renderDropDownField(
               'Gender',
-              'sex',
+              'gender',
               genderList,
-              props.travellerInformationResponse,
-              props.handleOnChange,
+              props.basicDetails,
+              props.handleOnChangeForBasicDetails,
               styles,
               matchStyleForDropdown,
             )}
+            {renderTextField('Passport', 'passport', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
           </div>
-          <div>
-            {renderPhoneNumberField('Persons Phone Number', 'phoneNumber', props.travellerInformationResponse, props.handleOnChange, styles)}
+          <div style={{ marginTop: '2%' }}>
+            {renderPhoneNumberField('Persons Phone Number', 'phoneNumber', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
             {renderPhoneNumberField(
               'Alternate Phone Number',
-              'alternatePhoneNumber',
-              props.travellerInformationResponse,
-              props.handleOnChange,
+              'secondaryPhoneNumber',
+              props.basicDetails,
+              props.handleOnChangeForBasicDetails,
               styles,
             )}
-            {renderDropDownField(
-              'Country Travelled From',
-              'countryFrom',
-              genderList,
-              props.travellerInformationResponse,
-              props.handleOnChange,
+            {renderRadioButtonField(
+              'Travelled abroad?',
+              'travelledAbroad',
+              yesNoRadioButton,
+              props.basicDetails,
+              props.handleOnChangeForBasicDetails,
               styles,
-              matchStyleForCountryDropdown,
             )}
           </div>
-          <div style={{ marginTop: '1%' }} className={styles.subHeading}>
+          <div style={{ marginTop: '2%' }}>
+            {props.basicDetails.travelledAbroad === 'Y' ? (
+              <div>
+                {renderTextField('Country Travelled From', 'countryVisited', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
+                {renderDateField('Date Of Arrival', 'dateOfArraival', 'DD-MM-YYYY', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
+              </div>
+            ) : (
+              ''
+            )}
+          </div>
+          <div style={{ marginTop: '2%' }}>
+            {renderTextField('Family Members Count', 'familyMembersCount', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
+            {renderRadioButtonField(
+              'Diabetes Indicator',
+              'diabetesIndicator',
+              yesNoRadioButton,
+              props.basicDetails,
+              props.handleOnChangeForBasicDetails,
+              styles,
+            )}
+            {renderRadioButtonField(
+              'Hypertension Indicator',
+              'hyperTensionIndicator',
+              yesNoRadioButton,
+              props.basicDetails,
+              props.handleOnChangeForBasicDetails,
+              styles,
+            )}
+            {renderTextField('Other Illness', 'otherIllness', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
+          </div>
+          <div style={{ marginTop: '2%' }}>
+            {renderTextField('Remarks', 'remarks', props.basicDetails, props.handleOnChangeForBasicDetails, styles, true)}
+          </div>
+
+          <div style={{ marginTop: '2%' }} className={styles.subHeading}>
             Person Traceability
             <Divider className={styles.informationDivider} />
-            {renderRadioButtonField(
-              'Is the call Successful?',
-              'callSuccessful',
-              yesNoRadioButton,
-              props.travellerInformationResponse,
-              props.handleOnChange,
-              styles,
-            )}
-            {props.travellerInformationResponse.callSuccessful === 'no'
-              ? renderRadioButtonField(
-                'Call Failure Reason',
-                'callFailureReason',
-                callFailureReasonRadioButton,
-                props.travellerInformationResponse,
-                props.handleOnChange,
+            <div style={{ marginTop: '2%' }}>
+              {renderPhoneNumberField('Phone Number', 'phoneNumber', props.callDetails, props.handleOnChangeForCallDetails, styles)}
+              {renderDropDownField(
+                'Answered By',
+                'answeredBy',
+                answeredByList,
+                props.callDetails,
+                props.handleOnChangeForCallDetails,
                 styles,
-              )
-              : ''}
-          </div>
-          <div style={{ marginTop: '1%' }} className={styles.subHeading}>
-            Person Health Details
-            <Divider className={styles.informationDivider} />
-            {renderRadioButtonField(
-              'Person Status',
-              'personStatus',
-              personStatusRadioButton,
-              props.travellerInformationResponse,
-              props.handleOnChange,
-              styles,
-            )}
-            {renderRadioButtonField(
-              'Person Currently Staying in ..',
-              'personCurrentlyStaying',
-              personCurrentlyStayingRadioButton,
-              props.travellerInformationResponse,
-              props.handleOnChange,
-              styles,
-            )}
-            <div>
+                matchStyleForDropdown,
+              )}
+            </div>
+            <div style={{ marginTop: '2%' }}>
               {renderRadioButtonField(
-                'Does he/she visited Hospital',
-                'visitedHospital',
+                'Is Suspected?',
+                'isSuspected',
                 yesNoRadioButton,
-                props.travellerInformationResponse,
-                props.handleOnChange,
+                props.callDetails,
+                props.handleOnChangeForCallDetails,
                 styles,
               )}
-              {renderTextField('Hospital Details', 'hospitalDetails', props.travellerInformationResponse, props.handleOnChange, styles)}
-              {renderDateField('Date Visited', 'dateVisited', props.travellerInformationResponse, props.handleOnChange, styles)}
+              {renderRadioButtonField(
+                'Is the call Successful?',
+                'callSuccessFulIndicator',
+                yesNoRadioButton,
+                props.callDetails,
+                props.handleOnChangeForCallDetails,
+                styles,
+              )}
+              {props.callDetails.callSuccessFulIndicator === 'N'
+                ? renderRadioButtonField(
+                    'Call Failure Reason',
+                    'callFailureReason',
+                    callFailureReasonRadioButton,
+                    props.callDetails,
+                    props.handleOnChangeForCallDetails,
+                    styles,
+                  )
+                : ''}
             </div>
           </div>
-          <div>
-            {renderRadioButtonField(
-              'Visited Other Place during Quarantine',
-              'visitedOtherPlace',
-              yesNoRadioButton,
-              props.travellerInformationResponse,
-              props.handleOnChange,
-              styles,
-            )}
-            {renderTextField(
-              'Add Notes about the Travel',
-              'notesAboutTravel',
-              props.travellerInformationResponse,
-              props.handleOnChange,
-              styles,
-              true,
-            )}
-            {renderRadioButtonField(
-              'Did he/she travelled using Public transport',
-              'travelledUsingPublicTransport',
-              yesNoRadioButton,
-              props.travellerInformationResponse,
-              props.handleOnChange,
-              styles,
-            )}
-            {renderTextField('Travel Details', 'travelDetails', props.travellerInformationResponse, props.handleOnChange, styles)}
-            {renderDateField('Date', 'dateTravelled', props.travellerInformationResponse, props.handleOnChange, styles)}
-            {renderTextField('Add Other Notes', 'otherNotes', props.travellerInformationResponse, props.handleOnChange, styles, true)}
+
+          <div style={{ marginTop: '2%' }} className={styles.subHeading}>
+            Person Health Details
+            <Divider className={styles.informationDivider} />
+            <div style={{ marginTop: '2%' }}>
+              {renderRadioButtonField(
+                'Person Status',
+                'healthStatus',
+                personStatusRadioButton,
+                props.transactionDetails,
+                props.handleOnChangeForTransactionDetails,
+                styles,
+              )}
+              {renderTextField('Symptoms', 'symptoms', props.transactionDetails, props.handleOnChangeForTransactionDetails, styles)}
+              {renderDateField(
+                'Date of First Symptom',
+                'dateOfFirstSymptom',
+                'DD-MM-YYYY',
+                props.transactionDetails,
+                props.handleOnChangeForTransactionDetails,
+                styles,
+              )}
+            </div>
+            <div>
+              <Button
+                variant={'outlined'}
+                style={{
+                  width: '300px',
+                  border: 'none',
+                  color: '#0084FF',
+                  textDecoration: 'underline',
+                  justifyContent: 'left',
+                  padding: '0',
+                  marginTop: '2%',
+                }}
+                onClick={() => props.handleAddForTravelDetails()}
+              >
+                Add Travel Details
+              </Button>
+              {props.travelDetails.map((field, idx) => {
+                return (
+                  <div key={`${field}-${idx}`} className={styles.dynamicFields + ' ' + `${idx}`}>
+                    <Button variant="outlined" style={{ border: 'none', float: 'right' }} onClick={() => props.handleRemoveForTravelFields(idx)}>
+                      <CloseIcon />
+                    </Button>
+                    <Typography className={styles.heading} style={{ display: 'inline-block' }}>
+                      Travel Details {idx + 1}
+                    </Typography>
+                    <Divider className={styles.personalInformationDivider} />
+                    <div style={{ marginTop: '2%' }}>
+                      {renderTextField('Place Of Visit', 'placeOfVisit', field, props.handleChangeForTravelDetailsDynamicFields, styles, false, idx)}
+                      {renderDropDownField(
+                        'Place Type',
+                        'placeType',
+                        placeTypeList,
+                        field,
+                        props.handleChangeForTravelDetailsDynamicFields,
+                        styles,
+                        matchStyleForDropdown,
+                        idx,
+                      )}
+                      {renderDateField(
+                        'Visited Date',
+                        'visitedDate',
+                        'DD-MM-YYYY',
+                        field,
+                        props.handleChangeForTravelDetailsDynamicFields,
+                        styles,
+                        idx,
+                      )}
+                      {renderDropDownField(
+                        'Mode Of Travel',
+                        'modeOfTravel',
+                        modeOfTravelList,
+                        field,
+                        props.handleChangeForTravelDetailsDynamicFields,
+                        styles,
+                        matchStyleForDropdown,
+                        idx,
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
+
           <div>
             <div style={{ display: 'inline-block', marginTop: '1%' }}>
               <Button
@@ -517,23 +623,44 @@ const TravellerInformationComponent = (props) => {
                     <CloseIcon />
                   </Button>
                   <Divider className={styles.personalInformationDivider} />
-                  <div>
-                    {renderTextField('Persons First Name', 'firstName', field, props.handleOnChange, styles, false, idx)}
-                    {renderTextField('Last Name', 'lastName', field, props.handleOnChange, styles, false, idx)}
-                    {renderTextField('Age', 'age', field, props.handleOnChange, styles, false, idx)}
-                    {renderDropDownField('Gender', 'sex', genderList, field, props.handleOnChange, styles, matchStyleForDropdown, idx)}
+                  <div style={{ marginTop: '2%' }}>
+                    {renderTextField('Persons Name', 'name', field, props.handleChangeForContractedPersonsDynamicFields, styles, false, idx)}
+                    {renderTextField('Age', 'age', field, props.handleChangeForContractedPersonsDynamicFields, styles, false, idx)}
+                    {renderDropDownField(
+                      'Gender',
+                      'gender',
+                      genderList,
+                      field,
+                      props.handleChangeForContractedPersonsDynamicFields,
+                      styles,
+                      matchStyleForDropdown,
+                      idx,
+                    )}
                   </div>
-                  <div>
-                    <div>
-                      {renderPhoneNumberField('Persons Phone Number', 'phoneNumber', field, props.handleOnChange, styles, false, idx)}
-                      {renderPhoneNumberField('Alternate Phone Number', 'alternatePhoneNumber', field, props.handleOnChange, styles, idx)}
-                    </div>
+                  <div style={{ marginTop: '2%' }}>
+                    {renderPhoneNumberField(
+                      'Persons Phone Number',
+                      'phoneNumber',
+                      field,
+                      props.handleChangeForContractedPersonsDynamicFields,
+                      styles,
+                      false,
+                      idx,
+                    )}
+                    {renderPhoneNumberField(
+                      'Alternate Phone Number',
+                      'alternatePhoneNumber',
+                      field,
+                      props.handleChangeForContractedPersonsDynamicFields,
+                      styles,
+                      idx,
+                    )}
                   </div>
                 </div>
               );
             })}
           </div>
-          <Button variant="contained" style={{ width: '300px', marginTop: '2%' }}>
+          <Button variant="contained" style={{ width: '300px', marginTop: '2%' }} onClick={props.handleSave}>
             SUBMIT
           </Button>
         </DialogContent>
@@ -545,11 +672,21 @@ const TravellerInformationComponent = (props) => {
 TravellerInformationComponent.propTypes = {
   showDialog: PropTypes.bool,
   handleCloseForDialog: PropTypes.func,
-  travellerInformationResponse: PropTypes.object,
+  basicDetails: PropTypes.object,
+  callDetails: PropTypes.object,
+  transactionDetails: PropTypes.object,
+  travelDetails: PropTypes.array,
   contractedFields: PropTypes.array,
-  handleOnChange: PropTypes.func,
+  handleOnChangeForBasicDetails: PropTypes.func,
+  handleOnChangeForCallDetails: PropTypes.func,
+  handleOnChangeForTransactionDetails: PropTypes.func,
+  handleChangeForTravelDetailsDynamicFields: PropTypes.func,
+  handleChangeForContractedPersonsDynamicFields: PropTypes.func,
+  handleAddForTravelDetails: PropTypes.func,
   handleAddForContractedFields: PropTypes.func,
+  handleRemoveForTravelFields: PropTypes.func,
   handleRemoveForContractedFields: PropTypes.func,
+  handleSave: PropTypes.func,
 };
 
 export default TravellerInformationComponent;
