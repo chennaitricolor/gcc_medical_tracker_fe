@@ -205,6 +205,28 @@ const getStyleByPersonStatus = (personStatus) => {
   }
 };
 
+function renderTextFieldForAddress(label, key, basicDetails, handleOnChange, styles, multilineRequired = false, idx = null) {
+  const address = basicDetails !== undefined &&  basicDetails.address !== undefined ? basicDetails.address : {};
+  return (
+      <TextField
+          className={'traveller-information-' + key + ' ' + styles.textField}
+          label={label}
+          id={key}
+          value={jsonPath({
+            flatten: true,
+            json: address,
+            path: key,
+            wrap: false,
+          })}
+          multiline={multilineRequired}
+          onChange={(event) => handleOnChange(event, key, 'text', idx)}
+          autoComplete="off"
+          margin={'normal'}
+          variant={'outlined'}
+      />
+  );
+}
+
 function renderTextField(label, key, travellerInformation, handleOnChange, styles, multilineRequired = false, idx = null) {
   return (
     <TextField
@@ -244,6 +266,43 @@ function renderPhoneNumberField(label, key, travellerInformation, handleOnChange
   );
 }
 
+function renderDropDownFieldForAsyncAPICall(label, key, dropdownList, addressDetails, handleOnChange, handleInputValueChange, styles, matchStyle, idx = null) {
+  let dropDownValues = dropdownList !== undefined ? dropdownList : [];
+  if(key === 'street_name') {
+    dropDownValues = dropDownValues.map(dropDownValue => dropDownValue['street']);
+  }
+  else if( key === 'area') {
+    dropDownValues = dropDownValues.map(dropDownValue => dropDownValue['area']);
+  }
+  return (
+      <Autocomplete
+          className={'traveller-information-' + key + ' ' + styles.label}
+          id={key}
+          style={matchStyle}
+          options={dropDownValues}
+          loadingText={'Loading'}
+          classes={{
+            option: styles.option,
+          }}
+          getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
+          onChange={(event, value) => handleInputValueChange(value, key, 'dropdown', idx)}
+          onInputChange={(event, value) => {handleOnChange(value, key, 'dropdown', idx)}}
+          renderInput={(params) => (
+              <TextField
+                  {...params}
+                  label={label}
+                  variant={'outlined'}
+                  fullWidth
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'off',
+                  }}
+              />
+          )}
+      />
+  );
+}
+
 function renderDropDownField(label, key, dropdownList, travellerInformation, handleOnChange, styles, matchStyle, idx = null) {
   return (
     <Autocomplete
@@ -257,6 +316,7 @@ function renderDropDownField(label, key, dropdownList, travellerInformation, han
       }}
       getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
       onChange={(event, value) => handleOnChange(value, key, 'dropdown', idx)}
+      //onInputChange={(event, value) => {handleOnChange(value, event)}}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -459,6 +519,61 @@ const TravellerInformationComponent = (props) => {
               styles,
             )}
             {renderTextField('Other Illness', 'otherIllness', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
+          </div>
+          <div style={{ marginTop: '2%' }} className={styles.subHeading}>
+            Address
+            <Divider className={styles.informationDivider} />
+          <div style={{ marginTop: '2%' }}>
+            {renderTextFieldForAddress('Flat/Home Number and Floor', 'numberAndFloor', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
+            {renderDropDownFieldForAsyncAPICall(
+                'Street',
+                'street_name',
+                props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                props.basicDetails,
+                props.handleAddressFieldChanges,
+                props.handleAddressFieldsOnValueChange,
+                styles,
+                matchStyleForDropdown,
+            )}
+            {renderDropDownFieldForAsyncAPICall(
+                'Area',
+                'area',
+                props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                props.basicDetails,
+                props.handleAddressFieldChanges,
+                props.handleAddressFieldsOnValueChange,
+                styles,
+                matchStyleForDropdown,
+            )}
+            {renderDropDownField(
+                'City',
+                'city',
+                answeredByList,
+                props.basicDetails,
+                props.handleAddressFieldChanges,
+                styles,
+                matchStyleForDropdown,
+            )}
+            {renderDropDownField(
+                'State',
+                'state',
+                answeredByList,
+                props.basicDetails,
+                props.handleAddressFieldChanges,
+                styles,
+                matchStyleForDropdown,
+            )}
+            {renderDropDownField(
+                'Pin Code',
+                'pinCode',
+                answeredByList,
+                props.basicDetails,
+                props.handleAddressFieldChanges,
+                styles,
+                matchStyleForDropdown,
+            )}
+
+          </div>
           </div>
           <div style={{ marginTop: '2%' }}>
             {renderTextField('Remarks', 'remarks', props.basicDetails, props.handleOnChangeForBasicDetails, styles, true)}
@@ -686,7 +801,10 @@ TravellerInformationComponent.propTypes = {
   handleAddForContractedFields: PropTypes.func,
   handleRemoveForTravelFields: PropTypes.func,
   handleRemoveForContractedFields: PropTypes.func,
+  handleAddressFieldChanges: PropTypes.func,
   handleSave: PropTypes.func,
+  locationDetails: PropTypes.any,
+  handleAddressFieldsOnValueChange: PropTypes.func
 };
 
 export default TravellerInformationComponent;

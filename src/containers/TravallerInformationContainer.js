@@ -3,11 +3,14 @@ import TravellerInformationComponent from '../components/TravellerInformationCom
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import { formatDateToMMDDYYYYWithTimeFormat } from '../utils/GeneralUtils';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as PropTypes from 'prop-types';
+import getLocationsByType from "../actions/GetLocationsByType";
 
 const TravellerInformationContainer = (props) => {
   const dispatch = useDispatch();
+
+  const locationsList = useSelector(state => state.getLocationsByTypeReducer);
 
   const [basicDetails, setBasicDetails] = useReducer((state, newState) => ({ ...state, ...newState }), {
     name: '',
@@ -208,6 +211,59 @@ const TravellerInformationContainer = (props) => {
     }
   };
 
+  const handleAddressFieldInput = (event, id, type, i) => {
+    if(event.length > 0 && event.length % 5 === 0) {
+    dispatch({
+      type: getLocationsByType.GET_LOCATIONS_BY_TYPE,
+      payload: {
+        pathVariable: id,
+        param: {
+          [id] : event
+        }
+      }
+    });
+    }
+  };
+
+  const handleAddressFieldValuesOnChange = (event, id, type, i) => {
+    if (type === 'text') {
+      if (event.target.value !== '') {
+        setBasicDetails({
+          address : {
+            ...basicDetails.address,
+            [event.target.id]: event.target.value,
+          }
+        });
+      } else {
+        setBasicDetails({
+          address: {
+            ...basicDetails.address,
+            [event.target.id]: undefined,
+          }
+        });
+      }
+    }
+    if (type === 'dropdown') {
+      if (event !== null) {
+        const idValue = id === 'street_name' ? 'street' : id;
+        setBasicDetails({
+          address: {
+            ...basicDetails.address,
+            [idValue]: event,
+          }
+        });
+      } else {
+        const idValue = id === 'street_name' ? 'street' : id;
+        setBasicDetails({
+          address: {
+            ...basicDetails.address,
+            [idValue]: '',
+          }
+        });
+      }
+    }
+  }
+
   const handleChangeForTravelDetailsDynamicFields = (event, id, type, i) => {
     let temp = [];
     temp = temp.concat(...travelDetails);
@@ -381,7 +437,10 @@ const TravellerInformationContainer = (props) => {
           handleAddForContractedFields={handleAddForContractedFields}
           handleRemoveForTravelFields={handleRemoveForTravelFields}
           handleRemoveForContractedFields={handleRemoveForContractedFields}
+          handleAddressFieldChanges={handleAddressFieldInput}
+          handleAddressFieldsOnValueChange={handleAddressFieldValuesOnChange}
           handleSave={handleSave}
+          locationDetails={locationsList.locationsByType}
         />
       </MuiPickersUtilsProvider>
     </div>

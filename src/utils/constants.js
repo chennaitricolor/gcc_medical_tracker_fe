@@ -20,4 +20,5 @@ export const apiUrls = {
   resetPassword: '/medicaltracker/auth/password',
   getPersonsByWard: '/medicaltracker/dashboard/wards/',
   addContractedPersons: '/medicaltracker/form/persons',
+  locationsByType: '/medicaltracker/form/locations/street_name'
 };
