@@ -3,9 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import * as PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
 import { Tooltip } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -66,8 +64,6 @@ const useStyles = makeStyles({
     },
 });
 
-const options = ['Zone 1', 'Zone 2', 'Zone 3'];
-
 
 export const StatsComponent = props => {
     const classes = useStyles();
@@ -84,18 +80,6 @@ export const StatsComponent = props => {
         <div>
             <Card className={classes.card}>
                 <CardContent>
-                    {/*{<Autocomplete
-                        id="zone-select"
-                        options={props.zonesList.length > 0 ? getZoneNamesFromProps(props.zonesList) : []}
-                        getOptionLabel={(option) => option}
-                        onChange={(event, value) => props.onZoneSelectionChange(event, value)}
-                        style={{ width: '70%' }}
-                        renderInput={(params) => {
-
-                            return(<TextField {...params} label="Select Zone" InputProps={params.InputProps} onChange={({ target }) => target.value}/>);
-                        }
-                        }
-                    />}*/}
                     {<Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
@@ -104,6 +88,9 @@ export const StatsComponent = props => {
                         disableUnderline
                         onChange={(event, value) => props.onZoneSelectionChange(event, value)}
                     >
+                        <MenuItem value="Select a Zone" disabled>
+                            Select a Zone
+                        </MenuItem>
                         {
                             getZoneNamesFromProps(props.zonesList).map(option => {
                                 return (<MenuItem value={option}>{option}</MenuItem>);
@@ -111,9 +98,9 @@ export const StatsComponent = props => {
                         }
                     </Select>}
 
-                    <Tooltip title={'TIRUVOTRIYUR'} interactive>
+                    <Tooltip title={''} interactive>
                     <Typography color="textSecondary" className={classes.zoneNameLabel}>
-                        TIRUVOTRIYUR
+
                     </Typography>
                     </Tooltip>
                 </CardContent>

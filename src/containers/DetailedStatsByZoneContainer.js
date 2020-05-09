@@ -2,23 +2,9 @@ import React, {useState} from 'react';
 import * as PropTypes from 'prop-types';
 import DetailedStatsByZoneComponent from "../components/DetailedStatsByZoneComponent";
 import getPersonsByWardActions from "../actions/GetPersonsByWardAction";
-import getPersonsByWardReducer from "../reducers/GetPersonsByWardReducer";
 import {useDispatch, useSelector} from "react-redux";
 import LoadingComponent from "../components/LoadingComponent";
 import Alert from "@material-ui/lab/Alert";
-import StatsComponent from "../components/StatsComponent";
-
-function createData(id, name, age, address, phone, trackingStatus, lastContacted, personStatus) {
-    return { id, name, age, address, phone, trackingStatus, lastContacted, personStatus };
-}
-
-const rows = [
-    createData(1,'Maalai Sachin', '58/M', '1, Sabari Nagar Extn 1212121212121212', '9884242323', '26-Mar-20', '07-Apr-20', 'Recovered'),
-    createData(2, 'Narendran Mohanasundaram', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Symptomatic'),
-    createData(3, 'Jegan R', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Deceased'),
-    createData(4, 'Riyaz A', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Urgent'),
-    createData(5, 'Nandhakumar S', '58/M', '1, Sabari Nagar Extn', '9884242323', '26-Mar-20', '07-Apr-20', 'Quarantine'),
-];
 
 const loadingComponentStyle = {
     top: '40%',
@@ -30,7 +16,7 @@ const loadingComponentStyle = {
 
 const DetailedStatsByZoneContainer = (props) => {
 
-    const [personsList, setPersonsList] = useState(rows);
+    const [searchText, setSearchText] = useState('');
     const [selectedWard, setSelectedWard] = useState('');
     const personsByWard = useSelector(state => state.getPersonsByWardReducer);
     const dispatch = useDispatch();
@@ -47,9 +33,7 @@ const DetailedStatsByZoneContainer = (props) => {
     };
 
     const handleSearchTextChange = (event) => {
-        //replace rows with personsByWard from reducer
-        const filteredPersonsList = event.target.value !== '' && event.target.value.length >= 1 ? (personsList.filter(data => data.name.includes(event.target.value))) : rows;
-        setPersonsList(filteredPersonsList);
+        setSearchText(event.target.value);
     };
 
     const handleFilterChange = () => {
@@ -58,7 +42,10 @@ const DetailedStatsByZoneContainer = (props) => {
 
     const getPersonsByWardFromAPI = (personsByWard) => {
         if(personsByWard.personsByWard !== undefined && personsByWard.personsByWard.success) {
-            return personsByWard.personsByWard.persons;
+            const personsList = personsByWard.personsByWard.persons;
+            return searchText !== '' ? personsList.filter(data => ((data.name !== undefined && data.name !== '' && data.name.toLowerCase().includes(searchText.toLowerCase())) ||
+                (data.phoneNumber !== undefined && data.phoneNumber !== '' && data.phoneNumber.includes(searchText))))
+                : personsList;
         }
         return [];
     };

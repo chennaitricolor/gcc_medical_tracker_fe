@@ -45,6 +45,8 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: '0px 3px 6px #7C7C7C29',
     background: '#FFFFFF 0% 0% no-repeat padding-box',
     borderRadius: theme.shape.borderRadius,
+    pointerEvents: 'none',
+    opacity: 0.7
   },
   inputRoot: {
     color: 'inherit',
@@ -58,11 +60,8 @@ const useStyles = makeStyles((theme) => ({
 
 const PatientsListHeaderComponent = (props) => {
   const classes = useStyles();
-  const [age, setAge] = useState(0);
   const { handleSearchTextChange, handleFilterChange } = props;
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -84,7 +83,7 @@ const PatientsListHeaderComponent = (props) => {
             <Select
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
-              value={age}
+              value={0}
               label="Filter"
               disableUnderline
               IconComponent={KeyboardArrowDownIcon}
