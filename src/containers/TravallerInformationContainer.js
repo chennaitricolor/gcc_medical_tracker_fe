@@ -225,22 +225,49 @@ const TravellerInformationContainer = (props) => {
     }
   };
 
-  const handleAddressFieldValuesOnChange = (event, id, type, i) => {
+  const handleAddressFieldValuesOnChange = (event, id, type, i, calledBy) => {
     if (type === 'text') {
       if (event.target.value !== '') {
-        setBasicDetails({
-          address : {
-            ...basicDetails.address,
-            [event.target.id]: event.target.value,
-          }
-        });
+        if(calledBy === 'Basic Details') {
+          setBasicDetails({
+            address : {
+              ...basicDetails.address,
+              [event.target.id]: event.target.value,
+            }
+          });
+        }
+        else if(calledBy === 'Travel Details') {
+
+        }
+        else if(calledBy === 'Transaction Details') {
+          setTransactionDetails({
+            address : {
+              ...transactionDetails.address,
+              [event.target.id]: event.target.value,
+            }
+          });
+        }
       } else {
-        setBasicDetails({
-          address: {
-            ...basicDetails.address,
-            [event.target.id]: undefined,
-          }
-        });
+        if(calledBy === 'Basic Details') {
+          setBasicDetails({
+            address: {
+              ...basicDetails.address,
+              [event.target.id]: undefined,
+            }
+          });
+        }
+        else if(calledBy === 'Travel Details') {
+
+        }
+        else if(calledBy === 'Transaction Details') {
+          setTransactionDetails({
+            address : {
+              ...transactionDetails.address,
+              [event.target.id]: event.target.value,
+            }
+          });
+        }
+
       }
     }
     if (type === 'dropdown') {
@@ -250,21 +277,49 @@ const TravellerInformationContainer = (props) => {
         locationsList.locationsByType !== undefined &&
         locationsList.locationsByType.locations !== undefined ? locationsList.locationsByType.locations.filter(location => location.area === event).map(location => location.id): [];
         const selectedArea = selectedAreaList.length > 0 ? selectedAreaList[0] : '';
-        setBasicDetails({
-          address: {
-            ...basicDetails.address,
-            [idValue]: event,
-            locationId: selectedArea
-          }
-        });
+        if(calledBy === 'Basic Details') {
+          setBasicDetails({
+            address: {
+              ...basicDetails.address,
+              [idValue]: event,
+              locationId: selectedArea
+            }
+          });
+        }
+      else if(calledBy === 'Travel Details') {
+
+        }
+        else if(calledBy === 'Transaction Details') {
+          setTransactionDetails({
+            address: {
+              ...transactionDetails.address,
+              [idValue]: event,
+              locationId: selectedArea
+            }
+          });
+        }
       } else {
         const idValue = id === 'street_name' ? 'street' : id;
-        setBasicDetails({
-          address: {
-            ...basicDetails.address,
-            [idValue]: '',
-          }
-        });
+        if(calledBy === 'Basic Details') {
+          setBasicDetails({
+            address: {
+              ...basicDetails.address,
+              [idValue]: '',
+            }
+          });
+        }
+      else if(calledBy === 'Travel Details') {
+
+        }
+        else if(calledBy === 'Transaction Details') {
+          setTransactionDetails({
+            address: {
+              ...transactionDetails.address,
+              [idValue]: '',
+            }
+          });
+        }
+
       }
     }
   }

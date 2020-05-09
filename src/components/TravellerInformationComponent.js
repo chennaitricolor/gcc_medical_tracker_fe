@@ -205,8 +205,9 @@ const getStyleByPersonStatus = (personStatus) => {
   }
 };
 
-function renderTextFieldForAddress(label, key, basicDetails, handleOnChange, styles, multilineRequired = false, idx = null) {
+function renderTextFieldForAddress(label, key, basicDetails, handleOnChange, styles, multilineRequired = false, idx = null, calledBy) {
   const address = basicDetails !== undefined &&  basicDetails.address !== undefined ? basicDetails.address : {};
+
   return (
       <TextField
           className={'traveller-information-' + key + ' ' + styles.textField}
@@ -219,7 +220,7 @@ function renderTextFieldForAddress(label, key, basicDetails, handleOnChange, sty
             wrap: false,
           })}
           multiline={multilineRequired}
-          onChange={(event) => handleOnChange(event, key, 'text', idx)}
+          onChange={(event) => handleOnChange(event, key, 'text', idx, calledBy)}
           autoComplete="off"
           margin={'normal'}
           variant={'outlined'}
@@ -266,7 +267,7 @@ function renderPhoneNumberField(label, key, travellerInformation, handleOnChange
   );
 }
 
-function renderDropDownFieldForAsyncAPICall(label, key, dropdownList, addressDetails, handleOnChange, handleInputValueChange, styles, matchStyle, idx = null) {
+function renderDropDownFieldForAsyncAPICall(label, key, dropdownList, addressDetails, handleOnChange, handleInputValueChange, styles, matchStyle, idx = null, calledBy) {
   let dropDownValues = dropdownList !== undefined ? dropdownList : [];
   if(key === 'street_name') {
     dropDownValues = dropDownValues.map(dropDownValue => dropDownValue['street']);
@@ -285,8 +286,38 @@ function renderDropDownFieldForAsyncAPICall(label, key, dropdownList, addressDet
             option: styles.option,
           }}
           getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
-          onChange={(event, value) => handleInputValueChange(value, key, 'dropdown', idx)}
+          onChange={(event, value) => handleInputValueChange(value, key, 'dropdown', idx, calledBy)}
           onInputChange={(event, value) => {handleOnChange(value, key, 'dropdown', idx)}}
+          renderInput={(params) => (
+              <TextField
+                  {...params}
+                  label={label}
+                  variant={'outlined'}
+                  fullWidth
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'off',
+                  }}
+              />
+          )}
+      />
+  );
+}
+
+
+function renderDropDownFieldForAddress(label, key, dropdownList, travellerInformation, handleOnChange, styles, matchStyle, idx = null, calledBy) {
+  return (
+      <Autocomplete
+          className={'traveller-information-' + key + ' ' + styles.label}
+          id={key}
+          style={matchStyle}
+          options={dropdownList !== undefined ? dropdownList : []}
+          loadingText={'Loading'}
+          classes={{
+            option: styles.option,
+          }}
+          getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
+          onChange={(event, value) => handleOnChange(value, key, 'dropdown', idx, calledBy)}
           renderInput={(params) => (
               <TextField
                   {...params}
@@ -527,16 +558,19 @@ const TravellerInformationComponent = (props) => {
             Address
             <Divider className={styles.informationDivider} />
           <div style={{ marginTop: '2%' }}>
-            {renderDropDownField(
+            {renderDropDownFieldForAddress(
                 'Type of Address',
                 'type',
                 typeOfAddress,
                 props.basicDetails,
                 props.handleAddressFieldsOnValueChange,
                 styles,
-                matchStyleForDropdown
+                matchStyleForDropdown,
+                null,
+                'Basic Details'
             )}
-            {renderTextFieldForAddress('Flat/Home Number and Floor', 'numberAndFloor', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
+            {renderTextFieldForAddress('Flat/Home Number and Floor', 'numberAndFloor', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
+                'Basic Details')}
             {renderDropDownFieldForAsyncAPICall(
                 'Street',
                 'street_name',
@@ -546,6 +580,8 @@ const TravellerInformationComponent = (props) => {
                 props.handleAddressFieldsOnValueChange,
                 styles,
                 matchStyleForDropdown,
+                null,
+                'Basic Details'
             )}
             {renderDropDownFieldForAsyncAPICall(
                 'Area',
@@ -556,11 +592,16 @@ const TravellerInformationComponent = (props) => {
                 props.handleAddressFieldsOnValueChange,
                 styles,
                 matchStyleForDropdown,
+                null,
+                'Basic Details'
             )}
-            {renderTextFieldForAddress('City', 'city', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
+            {renderTextFieldForAddress('City', 'city', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
+              'Basic Details')}
             <div style={{ marginTop: '2%' }}>
-            {renderTextFieldForAddress('State', 'state', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
-            {renderTextFieldForAddress('Pin Code', 'pinCode', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
+            {renderTextFieldForAddress('State', 'state', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
+                'Basic Details')}
+            {renderTextFieldForAddress('Pin Code', 'pinCode', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
+                'Basic Details')}
             </div>
           </div>
           </div>
@@ -635,6 +676,59 @@ const TravellerInformationComponent = (props) => {
                 styles,
               )}
             </div>
+
+            <div style={{ marginTop: '2%' }} className={styles.subHeading}>
+              Address
+              <Divider className={styles.informationDivider} />
+              <div style={{ marginTop: '2%' }}>
+                {renderDropDownFieldForAddress(
+                    'Type of Address',
+                    'type',
+                    typeOfAddress,
+                    props.transactionDetails,
+                    props.handleAddressFieldsOnValueChange,
+                    styles,
+                    matchStyleForDropdown,
+                    null,
+                    'Transaction Details'
+                )}
+                {renderTextFieldForAddress('Flat/Home Number and Floor', 'numberAndFloor', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
+                    'Transaction Details')}
+                {renderDropDownFieldForAsyncAPICall(
+                    'Street',
+                    'street_name',
+                    props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                    props.transactionDetails,
+                    props.handleAddressFieldChanges,
+                    props.handleAddressFieldsOnValueChange,
+                    styles,
+                    matchStyleForDropdown,
+                    null,
+                    'Transaction Details'
+                )}
+                {renderDropDownFieldForAsyncAPICall(
+                    'Area',
+                    'area',
+                    props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                    props.transactionDetails,
+                    props.handleAddressFieldChanges,
+                    props.handleAddressFieldsOnValueChange,
+                    styles,
+                    matchStyleForDropdown,
+                    null,
+                    'Transaction Details'
+                )}
+                {renderTextFieldForAddress('City', 'city', props.transactionDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
+                    'Transaction Details')}
+                <div style={{ marginTop: '2%' }}>
+                  {renderTextFieldForAddress('State', 'state', props.transactionDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
+                      'Transaction Details')}
+                  {renderTextFieldForAddress('Pin Code', 'pinCode', props.transactionDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
+                      'Transaction Details')}
+                </div>
+              </div>
+            </div>
+
             <div>
               <Button
                 variant={'outlined'}
