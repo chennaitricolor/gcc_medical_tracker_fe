@@ -28,15 +28,15 @@ const TravellerInformationContainer = (props) => {
     hyperTensionIndicator: '',
     otherIllness: undefined,
     address: {
-      type: 'Apartment',
-      numberAndFloor: '1/11',
-      street: 'SUPARIKUNDA LANE(INCLUDING HUTS )',
-      addressMeta: 'HUTS',
-      area: 'CHEPAUK',
-      city: 'CHENNAI',
-      state: 'TAMIL NADU',
-      pinCode: 600005,
-      locationId: 3001,
+      type: '',
+      numberAndFloor: '',
+      street: '',
+      addressMeta: '',
+      area: '',
+      city: '',
+      state: '',
+      pinCode: '',
+      locationId: '',
     },
   });
 
@@ -52,15 +52,15 @@ const TravellerInformationContainer = (props) => {
   const [transactionDetails, setTransactionDetails] = useReducer((state, newState) => ({ ...state, ...newState }), {
     currentAddressSame: 'Y',
     currentAddress: {
-      type: 'Apartment',
-      numberAndFloor: '1/11',
-      street: 'SUPARIKUNDA LANE(INCLUDING HUTS )',
-      addressMeta: 'HUTS',
-      area: 'CHEPAUK',
-      city: 'CHENNAI',
-      state: 'TAMIL NADU',
-      pinCode: 600005,
-      locationId: 3001,
+      type: '',
+      numberAndFloor: '',
+      street: '',
+      addressMeta: '',
+      area: '',
+      city: '',
+      state: '',
+      pinCode: '',
+      locationId: '',
     },
     healthStatus: '',
     symptoms: undefined,
@@ -246,10 +246,15 @@ const TravellerInformationContainer = (props) => {
     if (type === 'dropdown') {
       if (event !== null) {
         const idValue = id === 'street_name' ? 'street' : id;
+        const selectedAreaList = id === 'area' && locationsList !== undefined &&
+        locationsList.locationsByType !== undefined &&
+        locationsList.locationsByType.locations !== undefined ? locationsList.locationsByType.locations.filter(location => location.area === event).map(location => location.id): [];
+        const selectedArea = selectedAreaList.length > 0 ? selectedAreaList[0] : '';
         setBasicDetails({
           address: {
             ...basicDetails.address,
             [idValue]: event,
+            locationId: selectedArea
           }
         });
       } else {

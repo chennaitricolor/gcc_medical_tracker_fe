@@ -424,6 +424,9 @@ const placeTypeList = ['Mall', 'Theater', 'Place Of Worship', 'Market', 'Others'
 
 const modeOfTravelList = ['Car', 'Bike', 'Public Transport', 'Others'];
 
+const typeOfAddress = [ 'Apartment', 'Individual House', 'Hospital', 'Others']
+
+
 const TravellerInformationComponent = (props) => {
   const styles = useStyles();
   return (
@@ -524,6 +527,15 @@ const TravellerInformationComponent = (props) => {
             Address
             <Divider className={styles.informationDivider} />
           <div style={{ marginTop: '2%' }}>
+            {renderDropDownField(
+                'Type of Address',
+                'type',
+                typeOfAddress,
+                props.basicDetails,
+                props.handleAddressFieldsOnValueChange,
+                styles,
+                matchStyleForDropdown
+            )}
             {renderTextFieldForAddress('Flat/Home Number and Floor', 'numberAndFloor', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
             {renderDropDownFieldForAsyncAPICall(
                 'Street',
@@ -545,34 +557,11 @@ const TravellerInformationComponent = (props) => {
                 styles,
                 matchStyleForDropdown,
             )}
-            {renderDropDownField(
-                'City',
-                'city',
-                answeredByList,
-                props.basicDetails,
-                props.handleAddressFieldChanges,
-                styles,
-                matchStyleForDropdown,
-            )}
-            {renderDropDownField(
-                'State',
-                'state',
-                answeredByList,
-                props.basicDetails,
-                props.handleAddressFieldChanges,
-                styles,
-                matchStyleForDropdown,
-            )}
-            {renderDropDownField(
-                'Pin Code',
-                'pinCode',
-                answeredByList,
-                props.basicDetails,
-                props.handleAddressFieldChanges,
-                styles,
-                matchStyleForDropdown,
-            )}
-
+            {renderTextFieldForAddress('City', 'city', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
+            <div style={{ marginTop: '2%' }}>
+            {renderTextFieldForAddress('State', 'state', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
+            {renderTextFieldForAddress('Pin Code', 'pinCode', props.basicDetails, props.handleAddressFieldsOnValueChange, styles)}
+            </div>
           </div>
           </div>
           <div style={{ marginTop: '2%' }}>
