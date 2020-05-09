@@ -1,16 +1,19 @@
-import React, { useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import TravellerInformationComponent from '../components/TravellerInformationComponent';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import { formatDateToMMDDYYYYWithTimeFormat } from '../utils/GeneralUtils';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as PropTypes from 'prop-types';
-import getLocationsByType from "../actions/GetLocationsByType";
+import getLocationsByType from '../actions/GetLocationsByType';
+import ToastComponent from '../components/ToastComponent';
+import toastActions from '../actions/ToastAction';
 
 const TravellerInformationContainer = (props) => {
   const dispatch = useDispatch();
 
-  const locationsList = useSelector(state => state.getLocationsByTypeReducer);
+  const locationsList = useSelector((state) => state.getLocationsByTypeReducer);
+  const addContractedPersonResponse = useSelector((state) => state.addContractedPersonReducer);
 
   const [basicDetails, setBasicDetails] = useReducer((state, newState) => ({ ...state, ...newState }), {
     name: '',
@@ -31,7 +34,6 @@ const TravellerInformationContainer = (props) => {
       type: '',
       numberAndFloor: '',
       street: '',
-      addressMeta: '',
       area: '',
       city: '',
       state: '',
@@ -50,12 +52,11 @@ const TravellerInformationContainer = (props) => {
   });
 
   const [transactionDetails, setTransactionDetails] = useReducer((state, newState) => ({ ...state, ...newState }), {
-    currentAddressSame: 'Y',
+    currentAddressSame: '',
     currentAddress: {
       type: '',
       numberAndFloor: '',
       street: '',
-      addressMeta: '',
       area: '',
       city: '',
       state: '',
@@ -70,6 +71,63 @@ const TravellerInformationContainer = (props) => {
   const [travelDetails, setTravelDetails] = useState([]);
 
   const [contractedPersonFields, setContractedPersonFields] = useState([]);
+
+  useEffect(() => {
+    if (props.type === 'ADD') {
+      return () => {
+        setBasicDetails({
+          name: '',
+          age: '',
+          gender: '',
+          passport: undefined,
+          phoneNumber: '',
+          secondaryPhoneNumber: undefined,
+          travelledAbroad: '',
+          countryVisited: undefined,
+          dateOfArraival: undefined,
+          remarks: undefined,
+          familyMembersCount: '',
+          diabetesIndicator: '',
+          hyperTensionIndicator: '',
+          otherIllness: undefined,
+          address: {
+            type: '',
+            numberAndFloor: '',
+            street: '',
+            area: '',
+            city: '',
+            state: '',
+            pinCode: '',
+            locationId: '',
+          },
+        });
+        setCallDetails({
+          phoneNumber: '',
+          answeredBy: undefined,
+          isSuspected: '',
+          callSuccessFulIndicator: undefined,
+          callFailureReason: undefined,
+          callType: undefined,
+        });
+        setTransactionDetails({
+          currentAddressSame: '',
+          currentAddress: {
+            type: '',
+            numberAndFloor: '',
+            street: '',
+            area: '',
+            city: '',
+            state: '',
+            pinCode: '',
+            locationId: '',
+          },
+          healthStatus: '',
+          symptoms: undefined,
+          dateOfFirstSymptom: undefined,
+        });
+      };
+    }
+  }, [props.showDialog]);
 
   const handleOnChangeForBasicDetails = (event, id, type, idx, dateFormat) => {
     if (idx !== null) {
@@ -89,11 +147,11 @@ const TravellerInformationContainer = (props) => {
       if (type === 'dropdown') {
         if (event !== null) {
           setBasicDetails({
-            [id]: event.value,
+            [id]: event.value === undefined ? event : event.value,
           });
         } else {
           setBasicDetails({
-            [id]: '',
+            [id]: undefined,
           });
         }
       }
@@ -104,7 +162,7 @@ const TravellerInformationContainer = (props) => {
           });
         } else {
           setBasicDetails({
-            [id]: '',
+            [id]: undefined,
           });
         }
       }
@@ -122,7 +180,7 @@ const TravellerInformationContainer = (props) => {
           });
         } else {
           setBasicDetails({
-            [id]: null,
+            [id]: undefined,
           });
         }
       }
@@ -134,18 +192,24 @@ const TravellerInformationContainer = (props) => {
       handleChangeForContractedPersonsDynamicFields(event, id, type, idx);
     } else {
       if (type === 'text') {
-        setCallDetails({
-          [event.target.id]: event.target.value,
-        });
+        if (event.target.value !== '') {
+          setCallDetails({
+            [event.target.id]: event.target.value,
+          });
+        } else {
+          setCallDetails({
+            [event.target.id]: undefined,
+          });
+        }
       }
       if (type === 'dropdown') {
         if (event !== null) {
           setCallDetails({
-            [id]: event,
+            [id]: event.value === undefined ? event : event.value,
           });
         } else {
           setCallDetails({
-            [id]: '',
+            [id]: undefined,
           });
         }
       }
@@ -156,7 +220,7 @@ const TravellerInformationContainer = (props) => {
           });
         } else {
           setCallDetails({
-            [id]: '',
+            [id]: undefined,
           });
         }
       }
@@ -174,7 +238,7 @@ const TravellerInformationContainer = (props) => {
           });
         } else {
           setCallDetails({
-            [id]: null,
+            [id]: undefined,
           });
         }
       }
@@ -186,9 +250,15 @@ const TravellerInformationContainer = (props) => {
       handleChangeForContractedPersonsDynamicFields(event, id, type, idx);
     } else {
       if (type === 'text') {
-        setTransactionDetails({
-          [event.target.id]: event.target.value,
-        });
+        if (event.target.value !== '') {
+          setTransactionDetails({
+            [event.target.id]: event.target.value,
+          });
+        } else {
+          setTransactionDetails({
+            [event.target.id]: undefined,
+          });
+        }
       }
       if (type === 'radioButton') {
         if (event !== null) {
@@ -204,7 +274,7 @@ const TravellerInformationContainer = (props) => {
           });
         } else {
           setTransactionDetails({
-            [id]: null,
+            [id]: undefined,
           });
         }
       }
@@ -212,119 +282,160 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleAddressFieldInput = (event, id, type, i) => {
-    if(event.length > 0 && event.length % 5 === 0) {
-    dispatch({
-      type: getLocationsByType.GET_LOCATIONS_BY_TYPE,
-      payload: {
-        pathVariable: id,
-        param: {
-          [id] : event
-        }
-      }
-    });
+    if (event.length > 0 && event.length % 5 === 0) {
+      dispatch({
+        type: getLocationsByType.GET_LOCATIONS_BY_TYPE,
+        payload: {
+          pathVariable: id,
+          param: {
+            [id]: event,
+          },
+        },
+      });
     }
   };
 
   const handleAddressFieldValuesOnChange = (event, id, type, i, calledBy) => {
     if (type === 'text') {
       if (event.target.value !== '') {
-        if(calledBy === 'Basic Details') {
+        if (calledBy === 'Basic Details') {
           setBasicDetails({
-            address : {
+            address: {
               ...basicDetails.address,
               [event.target.id]: event.target.value,
+            },
+          });
+        } else if (calledBy === 'Travel Details') {
+          let temp = [];
+          temp = temp.concat(...travelDetails);
+          temp.forEach((a, index) => {
+            if (index === i) {
+              temp.splice(i, 1, {
+                ...a,
+                address: {
+                  ...a.address,
+                  [event.target.id]: event.target.value,
+                },
+              });
             }
           });
-        }
-        else if(calledBy === 'Travel Details') {
-
-        }
-        else if(calledBy === 'Transaction Details') {
+          setTravelDetails(temp);
+        } else if (calledBy === 'Transaction Details') {
           setTransactionDetails({
-            address : {
-              ...transactionDetails.address,
+            currentAddress: {
+              ...transactionDetails.currentAddress,
               [event.target.id]: event.target.value,
-            }
+            },
           });
         }
       } else {
-        if(calledBy === 'Basic Details') {
+        if (calledBy === 'Basic Details') {
           setBasicDetails({
             address: {
               ...basicDetails.address,
               [event.target.id]: undefined,
+            },
+          });
+        } else if (calledBy === 'Travel Details') {
+          let temp = [];
+          temp = temp.concat(...travelDetails);
+          temp.forEach((a, index) => {
+            if (index === i) {
+              temp.splice(i, 1, {
+                ...a,
+                address: {
+                  ...a.address,
+                  [event.target.id]: undefined,
+                },
+              });
             }
           });
-        }
-        else if(calledBy === 'Travel Details') {
-
-        }
-        else if(calledBy === 'Transaction Details') {
+          setTravelDetails(temp);
+        } else if (calledBy === 'Transaction Details') {
           setTransactionDetails({
-            address : {
-              ...transactionDetails.address,
+            currentAddress: {
+              ...transactionDetails.currentAddress,
               [event.target.id]: event.target.value,
-            }
+            },
           });
         }
-
       }
     }
     if (type === 'dropdown') {
       if (event !== null) {
         const idValue = id === 'street_name' ? 'street' : id;
-        const selectedAreaList = id === 'area' && locationsList !== undefined &&
-        locationsList.locationsByType !== undefined &&
-        locationsList.locationsByType.locations !== undefined ? locationsList.locationsByType.locations.filter(location => location.area === event).map(location => location.id): [];
+        const selectedAreaList =
+          id === 'area' &&
+          locationsList !== undefined &&
+          locationsList.locationsByType !== undefined &&
+          locationsList.locationsByType.locations !== undefined
+            ? locationsList.locationsByType.locations.filter((location) => location.area === event).map((location) => location.id)
+            : [];
         const selectedArea = selectedAreaList.length > 0 ? selectedAreaList[0] : '';
-        if(calledBy === 'Basic Details') {
+        if (calledBy === 'Basic Details') {
           setBasicDetails({
             address: {
               ...basicDetails.address,
               [idValue]: event,
-              locationId: selectedArea
+              locationId: selectedArea,
+            },
+          });
+        } else if (calledBy === 'Travel Details') {
+          let temp = [];
+          temp = temp.concat(...travelDetails);
+          temp.forEach((a, index) => {
+            if (index === i) {
+              temp.splice(i, 1, {
+                ...a,
+                address: {
+                  ...a.address,
+                  [idValue]: event,
+                  locationId: selectedArea,
+                },
+              });
             }
           });
-        }
-      else if(calledBy === 'Travel Details') {
-
-        }
-        else if(calledBy === 'Transaction Details') {
+          setTravelDetails(temp);
+        } else if (calledBy === 'Transaction Details') {
           setTransactionDetails({
-            address: {
-              ...transactionDetails.address,
+            currentAddress: {
+              ...transactionDetails.currentAddress,
               [idValue]: event,
-              locationId: selectedArea
-            }
+              locationId: selectedArea,
+            },
           });
         }
       } else {
         const idValue = id === 'street_name' ? 'street' : id;
-        if(calledBy === 'Basic Details') {
+        if (calledBy === 'Basic Details') {
           setBasicDetails({
             address: {
               ...basicDetails.address,
               [idValue]: '',
+            },
+          });
+        } else if (calledBy === 'Travel Details') {
+          let temp = [];
+          temp = temp.concat(...travelDetails);
+          temp.forEach((a, index) => {
+            if (index === i) {
+              temp.splice(i, 1, { ...a, [idValue]: '' });
             }
           });
-        }
-      else if(calledBy === 'Travel Details') {
-
-        }
-        else if(calledBy === 'Transaction Details') {
+          setTravelDetails(temp);
+        } else if (calledBy === 'Transaction Details') {
           setTransactionDetails({
-            address: {
-              ...transactionDetails.address,
+            currentAddress: {
+              ...transactionDetails.currentAddress,
               [idValue]: '',
-            }
+            },
           });
         }
-
       }
     }
-  }
+  };
 
-  const handleChangeForTravelDetailsDynamicFields = (event, id, type, i) => {
+  const handleChangeForTravelDetailsDynamicFields = (event, id, type, i, dateFormat) => {
     let temp = [];
     temp = temp.concat(...travelDetails);
 
@@ -333,17 +444,9 @@ const TravellerInformationContainer = (props) => {
         if (type === 'text') {
           temp.splice(i, 1, { ...a, [id]: event.target.value });
         }
-
-        if (type === 'dropdownData') {
-          let value = event.target.value;
-          let array = value.split(',');
-          array = array.map((string) => string.trim());
-          temp.splice(i, 1, { ...a, [id]: array });
-        }
-
         if (type === 'dropdown') {
           if (event !== null) {
-            temp.splice(i, 1, { ...a, [id]: event });
+            temp.splice(i, 1, { ...a, [id]: event.value === undefined ? event : event.value });
           } else {
             temp.splice(i, 1, { ...a, [id]: null });
           }
@@ -358,7 +461,7 @@ const TravellerInformationContainer = (props) => {
         }
         if (type === 'date') {
           if (event !== null && event.valueOf() !== null) {
-            temp.splice(i, 1, { ...a, [id]: formatDateToMMDDYYYYWithTimeFormat(new Date(event.valueOf())) });
+            temp.splice(i, 1, { ...a, [id]: formatDateToMMDDYYYYWithTimeFormat(new Date(event.valueOf()), dateFormat) });
           } else {
             temp.splice(i, 1, { ...a, [id]: null });
           }
@@ -379,16 +482,9 @@ const TravellerInformationContainer = (props) => {
           temp.splice(i, 1, { ...a, [id]: event.target.value });
         }
 
-        if (type === 'dropdownData') {
-          let value = event.target.value;
-          let array = value.split(',');
-          array = array.map((string) => string.trim());
-          temp.splice(i, 1, { ...a, [id]: array });
-        }
-
         if (type === 'dropdown') {
           if (event !== null) {
-            temp.splice(i, 1, { ...a, [id]: event });
+            temp.splice(i, 1, { ...a, [id]: event.value === undefined ? event : event.value });
           } else {
             temp.splice(i, 1, { ...a, [id]: null });
           }
@@ -426,6 +522,16 @@ const TravellerInformationContainer = (props) => {
       placeType: '',
       visitedDate: null,
       modeOfTravel: '',
+      address: {
+        type: '',
+        numberAndFloor: '',
+        street: '',
+        area: '',
+        city: '',
+        state: '',
+        pinCode: '',
+        locationId: '',
+      },
     });
     setTravelDetails(values);
   };
@@ -435,7 +541,7 @@ const TravellerInformationContainer = (props) => {
     values.push({
       name: '',
       age: '',
-      sex: '',
+      gender: '',
       phoneNumber: '',
       alternatePhoneNumber: undefined,
     });
@@ -443,6 +549,9 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleSave = () => {
+    if (transactionDetails.currentAddressSame === 'Y') {
+      transactionDetails.currentAddress = basicDetails.address;
+    }
     if (props.type === 'ADD') {
       dispatch({
         type: 'ADD_CONTRACTED_PERSONS',
@@ -455,6 +564,8 @@ const TravellerInformationContainer = (props) => {
               isSuspected: callDetails.isSuspected,
             },
             transactionDetails: transactionDetails,
+            travelDetails: travelDetails.length === 0 ? undefined : travelDetails,
+            contractedPersons: contractedPersonFields.length === 0 ? undefined : contractedPersonFields,
           },
         },
       });
@@ -477,34 +588,104 @@ const TravellerInformationContainer = (props) => {
     }
   };
 
-  return (
-    <div>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
-        <TravellerInformationComponent
-          showDialog={props.showDialog}
-          handleCloseForDialog={props.handleCloseForDialog}
-          basicDetails={basicDetails}
-          callDetails={callDetails}
-          transactionDetails={transactionDetails}
-          travelDetails={travelDetails}
-          contractedFields={contractedPersonFields}
-          handleOnChangeForBasicDetails={handleOnChangeForBasicDetails}
-          handleOnChangeForCallDetails={handleOnChangeForCallDetails}
-          handleOnChangeForTransactionDetails={handleOnChangeForTransactionDetails}
-          handleChangeForTravelDetailsDynamicFields={handleChangeForTravelDetailsDynamicFields}
-          handleChangeForContractedPersonsDynamicFields={handleChangeForContractedPersonsDynamicFields}
-          handleAddForTravelDetails={handleAddForTravelDetails}
-          handleAddForContractedFields={handleAddForContractedFields}
-          handleRemoveForTravelFields={handleRemoveForTravelFields}
-          handleRemoveForContractedFields={handleRemoveForContractedFields}
-          handleAddressFieldChanges={handleAddressFieldInput}
-          handleAddressFieldsOnValueChange={handleAddressFieldValuesOnChange}
-          handleSave={handleSave}
-          locationDetails={locationsList.locationsByType}
-        />
-      </MuiPickersUtilsProvider>
-    </div>
-  );
+  const handleToastClose = () => {
+    dispatch({
+      type: toastActions.CLOSE_NOTIFICATION_DIALOG_OR_TOAST_MESSAGE,
+    });
+    props.handleCloseForDialog();
+    setBasicDetails({
+      name: '',
+      age: '',
+      gender: '',
+      passport: undefined,
+      phoneNumber: '',
+      secondaryPhoneNumber: undefined,
+      travelledAbroad: '',
+      countryVisited: undefined,
+      dateOfArraival: undefined,
+      remarks: undefined,
+      familyMembersCount: '',
+      diabetesIndicator: '',
+      hyperTensionIndicator: '',
+      otherIllness: undefined,
+      address: {
+        type: '',
+        numberAndFloor: '',
+        street: '',
+        area: '',
+        city: '',
+        state: '',
+        pinCode: '',
+        locationId: '',
+      },
+    });
+    setCallDetails({
+      phoneNumber: '',
+      answeredBy: undefined,
+      isSuspected: '',
+      callSuccessFulIndicator: undefined,
+      callFailureReason: undefined,
+      callType: undefined,
+    });
+    setTransactionDetails({
+      currentAddressSame: '',
+      currentAddress: {
+        type: '',
+        numberAndFloor: '',
+        street: '',
+        area: '',
+        city: '',
+        state: '',
+        pinCode: '',
+        locationId: '',
+      },
+      healthStatus: '',
+      symptoms: undefined,
+      dateOfFirstSymptom: undefined,
+    });
+  };
+
+  if (addContractedPersonResponse.addContractedPersonMessage !== '' && addContractedPersonResponse.addContractedPersonMessage !== undefined) {
+    return (
+      <ToastComponent
+        toastMessage={'Record created successfully'}
+        openToast={addContractedPersonResponse.addContractedPersonMessage !== ''}
+        handleClose={handleToastClose}
+        toastVariant={'success'}
+      />
+    );
+  } else {
+    return (
+      <div>
+        <MuiPickersUtilsProvider utils={MomentUtils}>
+          <TravellerInformationComponent
+            showDialog={props.showDialog}
+            handleCloseForDialog={props.handleCloseForDialog}
+            basicDetails={basicDetails}
+            callDetails={callDetails}
+            transactionDetails={transactionDetails}
+            travelDetails={travelDetails}
+            contractedFields={contractedPersonFields}
+            handleOnChangeForBasicDetails={handleOnChangeForBasicDetails}
+            handleOnChangeForCallDetails={handleOnChangeForCallDetails}
+            handleOnChangeForTransactionDetails={handleOnChangeForTransactionDetails}
+            handleChangeForTravelDetailsDynamicFields={handleChangeForTravelDetailsDynamicFields}
+            handleChangeForContractedPersonsDynamicFields={handleChangeForContractedPersonsDynamicFields}
+            handleAddForTravelDetails={handleAddForTravelDetails}
+            handleAddForContractedFields={handleAddForContractedFields}
+            handleRemoveForTravelFields={handleRemoveForTravelFields}
+            handleRemoveForContractedFields={handleRemoveForContractedFields}
+            handleAddressFieldChanges={handleAddressFieldInput}
+            handleAddressFieldsOnValueChange={handleAddressFieldValuesOnChange}
+            handleSave={handleSave}
+            locationDetails={locationsList.locationsByType}
+            addContractedPersonError={addContractedPersonResponse.addContractedPersonError}
+            handleToastClose={handleToastClose}
+          />
+        </MuiPickersUtilsProvider>
+      </div>
+    );
+  }
 };
 
 TravellerInformationContainer.propTypes = {

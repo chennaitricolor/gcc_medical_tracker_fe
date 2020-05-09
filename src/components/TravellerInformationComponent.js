@@ -13,10 +13,11 @@ import FormLabel from '@material-ui/core/FormLabel';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import { DatePicker } from "@material-ui/pickers";
+import { DatePicker, DateTimePicker } from "@material-ui/pickers";
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import InputMask from 'react-input-mask';
+import ToastComponent from "./ToastComponent";
 
 const useStyles = makeStyles(() => ({
   heading: {
@@ -134,6 +135,9 @@ const useStyles = makeStyles(() => ({
     '.traveller-information-visitedHospital': {
       display: 'inline-block',
     },
+    '.traveller-information-currentAddressSame': {
+      display: 'inline-block',
+    },
     '.traveller-information-hospitalDetails': {
       marginTop: '2%',
     },
@@ -206,25 +210,25 @@ const getStyleByPersonStatus = (personStatus) => {
 };
 
 function renderTextFieldForAddress(label, key, basicDetails, handleOnChange, styles, multilineRequired = false, idx = null, calledBy) {
-  const address = basicDetails !== undefined &&  basicDetails.address !== undefined ? basicDetails.address : {};
+  const address = basicDetails !== undefined && basicDetails.address !== undefined ? basicDetails.address : {};
 
   return (
-      <TextField
-          className={'traveller-information-' + key + ' ' + styles.textField}
-          label={label}
-          id={key}
-          value={jsonPath({
-            flatten: true,
-            json: address,
-            path: key,
-            wrap: false,
-          })}
-          multiline={multilineRequired}
-          onChange={(event) => handleOnChange(event, key, 'text', idx, calledBy)}
-          autoComplete="off"
-          margin={'normal'}
-          variant={'outlined'}
-      />
+    <TextField
+      className={'traveller-information-' + key + ' ' + styles.textField}
+      label={label}
+      id={key}
+      value={jsonPath({
+        flatten: true,
+        json: address,
+        path: key,
+        wrap: false,
+      })}
+      multiline={multilineRequired}
+      onChange={(event) => handleOnChange(event, key, 'text', idx, calledBy)}
+      autoComplete="off"
+      margin={'normal'}
+      variant={'outlined'}
+    />
   );
 }
 
@@ -267,70 +271,81 @@ function renderPhoneNumberField(label, key, travellerInformation, handleOnChange
   );
 }
 
-function renderDropDownFieldForAsyncAPICall(label, key, dropdownList, addressDetails, handleOnChange, handleInputValueChange, styles, matchStyle, idx = null, calledBy) {
+function renderDropDownFieldForAsyncAPICall(
+  label,
+  key,
+  dropdownList,
+  addressDetails,
+  handleOnChange,
+  handleInputValueChange,
+  styles,
+  matchStyle,
+  idx = null,
+  calledBy,
+) {
   let dropDownValues = dropdownList !== undefined ? dropdownList : [];
-  if(key === 'street_name') {
-    dropDownValues = dropDownValues.map(dropDownValue => dropDownValue['street']);
-  }
-  else if( key === 'area') {
-    dropDownValues = dropDownValues.map(dropDownValue => dropDownValue['area']);
+  if (key === 'street_name') {
+    dropDownValues = dropDownValues.map((dropDownValue) => dropDownValue['street']);
+  } else if (key === 'area') {
+    dropDownValues = dropDownValues.map((dropDownValue) => dropDownValue['area']);
   }
   return (
-      <Autocomplete
-          className={'traveller-information-' + key + ' ' + styles.label}
-          id={key}
-          style={matchStyle}
-          options={dropDownValues}
-          loadingText={'Loading'}
-          classes={{
-            option: styles.option,
+    <Autocomplete
+      className={'traveller-information-' + key + ' ' + styles.label}
+      id={key}
+      style={matchStyle}
+      options={dropDownValues}
+      loadingText={'Loading'}
+      classes={{
+        option: styles.option,
+      }}
+      getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
+      onChange={(event, value) => handleInputValueChange(value, key, 'dropdown', idx, calledBy)}
+      onInputChange={(event, value) => {
+        handleOnChange(value, key, 'dropdown', idx);
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          variant={'outlined'}
+          fullWidth
+          inputProps={{
+            ...params.inputProps,
+            autoComplete: 'off',
           }}
-          getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
-          onChange={(event, value) => handleInputValueChange(value, key, 'dropdown', idx, calledBy)}
-          onInputChange={(event, value) => {handleOnChange(value, key, 'dropdown', idx)}}
-          renderInput={(params) => (
-              <TextField
-                  {...params}
-                  label={label}
-                  variant={'outlined'}
-                  fullWidth
-                  inputProps={{
-                    ...params.inputProps,
-                    autoComplete: 'off',
-                  }}
-              />
-          )}
-      />
+        />
+      )}
+    />
   );
 }
 
-
 function renderDropDownFieldForAddress(label, key, dropdownList, travellerInformation, handleOnChange, styles, matchStyle, idx = null, calledBy) {
   return (
-      <Autocomplete
-          className={'traveller-information-' + key + ' ' + styles.label}
-          id={key}
-          style={matchStyle}
-          options={dropdownList !== undefined ? dropdownList : []}
-          loadingText={'Loading'}
-          classes={{
-            option: styles.option,
+    <Autocomplete
+      className={'traveller-information-' + key + ' ' + styles.label}
+      id={key}
+      style={matchStyle}
+      options={dropdownList !== undefined ? dropdownList : []}
+      loadingText={'Loading'}
+      classes={{
+        option: styles.option,
+      }}
+      getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
+      onChange={(event, value) => handleOnChange(value, key, 'dropdown', idx, calledBy)}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          variant={'outlined'}
+          fullWidth
+          inputProps={{
+            ...params.inputProps,
+            autoComplete: 'off',
           }}
-          getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
-          onChange={(event, value) => handleOnChange(value, key, 'dropdown', idx, calledBy)}
-          renderInput={(params) => (
-              <TextField
-                  {...params}
-                  label={label}
-                  variant={'outlined'}
-                  fullWidth
-                  inputProps={{
-                    ...params.inputProps,
-                    autoComplete: 'off',
-                  }}
-              />
-          )}
-      />
+        />
+      )}
+    />
   );
 }
 
@@ -388,35 +403,66 @@ function renderRadioButtonField(label, key, radioButtonList, travellerInformatio
   );
 }
 
-function renderDateField(label, key, dateFormat, campaignDetails, handleOnChange, styles, idx = null) {
-  return (
-    <DatePicker
-      className={'create-campaign-' + key + '-mui-pickers ' + styles.datePicker}
-      key={'create-campaign-' + key + '-mui-pickers-key'}
-      id={'create-campaign-' + key + '-mui-pickers'}
-      label={label}
-      value={
-        jsonPath({
-          flatten: true,
-          json: campaignDetails,
-          path: key,
-          wrap: false,
-        }) !== undefined
-          ? jsonPath({
+function renderDateField(label, key, dateFormat, type, campaignDetails, handleOnChange, styles, idx = null) {
+  if (type === 'date') {
+    return (
+      <DatePicker
+        className={'create-campaign-' + key + '-mui-pickers ' + styles.datePicker}
+        key={'create-campaign-' + key + '-mui-pickers-key'}
+        id={'create-campaign-' + key + '-mui-pickers'}
+        label={label}
+        value={
+          jsonPath({
+            flatten: true,
+            json: campaignDetails,
+            path: key,
+            wrap: false,
+          }) !== undefined
+            ? jsonPath({
               flatten: true,
               json: campaignDetails,
               path: key,
               wrap: false,
             })
-          : null
-      }
-      onChange={(date) => handleOnChange(date, key, 'date', idx, dateFormat)}
-      placeholder="MM/DD/YYYY"
-      format={dateFormat}
-      inputVariant="outlined"
-      clearable
-    />
-  );
+            : null
+        }
+        onChange={(date) => handleOnChange(date, key, 'date', idx, dateFormat)}
+        placeholder="MM/DD/YYYY"
+        format={dateFormat}
+        inputVariant="outlined"
+        clearable
+      />
+    );
+  } else if (type === 'datetime') {
+    return (
+      <DateTimePicker
+        className={'create-campaign-' + key + '-mui-pickers ' + styles.datePicker}
+        key={'create-campaign-' + key + '-mui-pickers-key'}
+        id={'create-campaign-' + key + '-mui-pickers'}
+        label={label}
+        value={
+          jsonPath({
+            flatten: true,
+            json: campaignDetails,
+            path: key,
+            wrap: false,
+          }) !== undefined
+            ? jsonPath({
+              flatten: true,
+              json: campaignDetails,
+              path: key,
+              wrap: false,
+            })
+            : null
+        }
+        onChange={(date) => handleOnChange(date, key, 'date', idx, dateFormat)}
+        placeholder="MM/DD/YYYY"
+        format={dateFormat}
+        inputVariant="outlined"
+        clearable
+      />
+    );
+  }
 }
 
 const matchStyleForDropdown = {
@@ -455,8 +501,7 @@ const placeTypeList = ['Mall', 'Theater', 'Place Of Worship', 'Market', 'Others'
 
 const modeOfTravelList = ['Car', 'Bike', 'Public Transport', 'Others'];
 
-const typeOfAddress = [ 'Apartment', 'Individual House', 'Hospital', 'Others']
-
+const typeOfAddress = ['Apartment', 'Individual House', 'Hospital', 'Others'];
 
 const TravellerInformationComponent = (props) => {
   const styles = useStyles();
@@ -482,9 +527,9 @@ const TravellerInformationComponent = (props) => {
               width: '50%',
             }}
           >
-            <Typography style={{ display: 'inline-block', marginRight: '5%' }}> Tracking Since: {'12 Mar 2020'}</Typography>
-            <Typography style={{ display: 'inline-block', marginRight: '5%' }}>Last Call: {'10 Apr 2020'}</Typography>
-            <Typography style={getStyleByPersonStatus('URGENT')}>{'URGENT'}</Typography>
+            {/*<Typography style={{ display: 'inline-block', marginRight: '5%' }}> Tracking Since: {'12 Mar 2020'}</Typography>*/}
+            {/*<Typography style={{ display: 'inline-block', marginRight: '5%' }}>Last Call: {'10 Apr 2020'}</Typography>*/}
+            {/*<Typography style={getStyleByPersonStatus('URGENT')}>{'URGENT'}</Typography>*/}
             <Button variant="outlined" style={{ border: 'none', float: 'right', padding: '0' }} onClick={props.handleCloseForDialog}>
               <CloseIcon />
             </Button>
@@ -528,7 +573,7 @@ const TravellerInformationComponent = (props) => {
             {props.basicDetails.travelledAbroad === 'Y' ? (
               <div>
                 {renderTextField('Country Travelled From', 'countryVisited', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
-                {renderDateField('Date Of Arrival', 'dateOfArraival', 'DD-MM-YYYY', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
+                {renderDateField('Date Of Arrival', 'dateOfArraival', 'DD-MM-YYYY', 'date', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
               </div>
             ) : (
               ''
@@ -557,8 +602,8 @@ const TravellerInformationComponent = (props) => {
           <div style={{ marginTop: '2%' }} className={styles.subHeading}>
             Address
             <Divider className={styles.informationDivider} />
-          <div style={{ marginTop: '2%' }}>
-            {renderDropDownFieldForAddress(
+            <div style={{ marginTop: '2%' }}>
+              {renderDropDownFieldForAddress(
                 'Type of Address',
                 'type',
                 typeOfAddress,
@@ -567,11 +612,19 @@ const TravellerInformationComponent = (props) => {
                 styles,
                 matchStyleForDropdown,
                 null,
-                'Basic Details'
-            )}
-            {renderTextFieldForAddress('Flat/Home Number and Floor', 'numberAndFloor', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
-                'Basic Details')}
-            {renderDropDownFieldForAsyncAPICall(
+                'Basic Details',
+              )}
+              {renderTextFieldForAddress(
+                'Flat/Home Number and Floor',
+                'numberAndFloor',
+                props.basicDetails,
+                props.handleAddressFieldsOnValueChange,
+                styles,
+                false,
+                null,
+                'Basic Details',
+              )}
+              {renderDropDownFieldForAsyncAPICall(
                 'Street',
                 'street_name',
                 props.locationDetails !== undefined ? props.locationDetails.locations : [],
@@ -581,9 +634,9 @@ const TravellerInformationComponent = (props) => {
                 styles,
                 matchStyleForDropdown,
                 null,
-                'Basic Details'
-            )}
-            {renderDropDownFieldForAsyncAPICall(
+                'Basic Details',
+              )}
+              {renderDropDownFieldForAsyncAPICall(
                 'Area',
                 'area',
                 props.locationDetails !== undefined ? props.locationDetails.locations : [],
@@ -593,17 +646,41 @@ const TravellerInformationComponent = (props) => {
                 styles,
                 matchStyleForDropdown,
                 null,
-                'Basic Details'
-            )}
-            {renderTextFieldForAddress('City', 'city', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
-              'Basic Details')}
-            <div style={{ marginTop: '2%' }}>
-            {renderTextFieldForAddress('State', 'state', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
-                'Basic Details')}
-            {renderTextFieldForAddress('Pin Code', 'pinCode', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
-                'Basic Details')}
+                'Basic Details',
+              )}
+              {renderTextFieldForAddress(
+                'City',
+                'city',
+                props.basicDetails,
+                props.handleAddressFieldsOnValueChange,
+                styles,
+                false,
+                null,
+                'Basic Details',
+              )}
+              <div style={{ marginTop: '2%' }}>
+                {renderTextFieldForAddress(
+                  'State',
+                  'state',
+                  props.basicDetails,
+                  props.handleAddressFieldsOnValueChange,
+                  styles,
+                  false,
+                  null,
+                  'Basic Details',
+                )}
+                {renderTextFieldForAddress(
+                  'Pin Code',
+                  'pinCode',
+                  props.basicDetails,
+                  props.handleAddressFieldsOnValueChange,
+                  styles,
+                  false,
+                  null,
+                  'Basic Details',
+                )}
+              </div>
             </div>
-          </div>
           </div>
           <div style={{ marginTop: '2%' }}>
             {renderTextField('Remarks', 'remarks', props.basicDetails, props.handleOnChangeForBasicDetails, styles, true)}
@@ -671,17 +748,26 @@ const TravellerInformationComponent = (props) => {
                 'Date of First Symptom',
                 'dateOfFirstSymptom',
                 'DD-MM-YYYY',
+                'date',
+                props.transactionDetails,
+                props.handleOnChangeForTransactionDetails,
+                styles,
+              )}
+              {renderRadioButtonField(
+                'Current Address Same as Permanent',
+                'currentAddressSame',
+                yesNoRadioButton,
                 props.transactionDetails,
                 props.handleOnChangeForTransactionDetails,
                 styles,
               )}
             </div>
-
-            <div style={{ marginTop: '2%' }} className={styles.subHeading}>
-              Address
-              <Divider className={styles.informationDivider} />
-              <div style={{ marginTop: '2%' }}>
-                {renderDropDownFieldForAddress(
+            {props.transactionDetails.currentAddressSame === 'N' ? (
+              <div style={{ marginTop: '2%' }} className={styles.subHeading}>
+                Address
+                <Divider className={styles.informationDivider} />
+                <div style={{ marginTop: '2%' }}>
+                  {renderDropDownFieldForAddress(
                     'Type of Address',
                     'type',
                     typeOfAddress,
@@ -690,11 +776,19 @@ const TravellerInformationComponent = (props) => {
                     styles,
                     matchStyleForDropdown,
                     null,
-                    'Transaction Details'
-                )}
-                {renderTextFieldForAddress('Flat/Home Number and Floor', 'numberAndFloor', props.basicDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
-                    'Transaction Details')}
-                {renderDropDownFieldForAsyncAPICall(
+                    'Transaction Details',
+                  )}
+                  {renderTextFieldForAddress(
+                    'Flat/Home Number and Floor',
+                    'numberAndFloor',
+                    props.transactionDetails,
+                    props.handleAddressFieldsOnValueChange,
+                    styles,
+                    false,
+                    null,
+                    'Transaction Details',
+                  )}
+                  {renderDropDownFieldForAsyncAPICall(
                     'Street',
                     'street_name',
                     props.locationDetails !== undefined ? props.locationDetails.locations : [],
@@ -704,9 +798,9 @@ const TravellerInformationComponent = (props) => {
                     styles,
                     matchStyleForDropdown,
                     null,
-                    'Transaction Details'
-                )}
-                {renderDropDownFieldForAsyncAPICall(
+                    'Transaction Details',
+                  )}
+                  {renderDropDownFieldForAsyncAPICall(
                     'Area',
                     'area',
                     props.locationDetails !== undefined ? props.locationDetails.locations : [],
@@ -716,19 +810,45 @@ const TravellerInformationComponent = (props) => {
                     styles,
                     matchStyleForDropdown,
                     null,
-                    'Transaction Details'
-                )}
-                {renderTextFieldForAddress('City', 'city', props.transactionDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
-                    'Transaction Details')}
-                <div style={{ marginTop: '2%' }}>
-                  {renderTextFieldForAddress('State', 'state', props.transactionDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
-                      'Transaction Details')}
-                  {renderTextFieldForAddress('Pin Code', 'pinCode', props.transactionDetails, props.handleAddressFieldsOnValueChange, styles, false, null,
-                      'Transaction Details')}
+                    'Transaction Details',
+                  )}
+                  {renderTextFieldForAddress(
+                    'City',
+                    'city',
+                    props.transactionDetails,
+                    props.handleAddressFieldsOnValueChange,
+                    styles,
+                    false,
+                    null,
+                    'Transaction Details',
+                  )}
+                  <div style={{ marginTop: '2%' }}>
+                    {renderTextFieldForAddress(
+                      'State',
+                      'state',
+                      props.transactionDetails,
+                      props.handleAddressFieldsOnValueChange,
+                      styles,
+                      false,
+                      null,
+                      'Transaction Details',
+                    )}
+                    {renderTextFieldForAddress(
+                      'Pin Code',
+                      'pinCode',
+                      props.transactionDetails,
+                      props.handleAddressFieldsOnValueChange,
+                      styles,
+                      false,
+                      null,
+                      'Transaction Details',
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-
+            ) : (
+              ''
+            )}
             <div>
               <Button
                 variant={'outlined'}
@@ -770,7 +890,8 @@ const TravellerInformationComponent = (props) => {
                       {renderDateField(
                         'Visited Date',
                         'visitedDate',
-                        'DD-MM-YYYY',
+                        'DD-MM-YYYY HH:mm',
+                        'datetime',
                         field,
                         props.handleChangeForTravelDetailsDynamicFields,
                         styles,
@@ -786,6 +907,89 @@ const TravellerInformationComponent = (props) => {
                         matchStyleForDropdown,
                         idx,
                       )}
+                    </div>
+                    <div style={{ marginTop: '2%' }} className={styles.subHeading}>
+                      Address
+                      <Divider className={styles.informationDivider} />
+                      <div style={{ marginTop: '2%' }}>
+                        {renderDropDownFieldForAddress(
+                          'Type of Address',
+                          'type',
+                          typeOfAddress,
+                          field,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          matchStyleForDropdown,
+                          idx,
+                          'Travel Details',
+                        )}
+                        {renderTextFieldForAddress(
+                          'Flat/Home Number and Floor',
+                          'numberAndFloor',
+                          field,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          false,
+                          idx,
+                          'Travel Details',
+                        )}
+                        {renderDropDownFieldForAsyncAPICall(
+                          'Street',
+                          'street_name',
+                          props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                          field,
+                          props.handleAddressFieldChanges,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          matchStyleForDropdown,
+                          idx,
+                          'Travel Details',
+                        )}
+                        {renderDropDownFieldForAsyncAPICall(
+                          'Area',
+                          'area',
+                          props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                          field,
+                          props.handleAddressFieldChanges,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          matchStyleForDropdown,
+                          idx,
+                          'Travel Details',
+                        )}
+                        {renderTextFieldForAddress(
+                          'City',
+                          'city',
+                          field,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          false,
+                          idx,
+                          'Travel Details',
+                        )}
+                        <div style={{ marginTop: '2%' }}>
+                          {renderTextFieldForAddress(
+                            'State',
+                            'state',
+                            field,
+                            props.handleAddressFieldsOnValueChange,
+                            styles,
+                            false,
+                            idx,
+                            'Travel Details',
+                          )}
+                          {renderTextFieldForAddress(
+                            'Pin Code',
+                            'pinCode',
+                            field,
+                            props.handleAddressFieldsOnValueChange,
+                            styles,
+                            false,
+                            idx,
+                            'Travel Details',
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 );
@@ -842,7 +1046,6 @@ const TravellerInformationComponent = (props) => {
                       field,
                       props.handleChangeForContractedPersonsDynamicFields,
                       styles,
-                      false,
                       idx,
                     )}
                     {renderPhoneNumberField(
@@ -863,6 +1066,16 @@ const TravellerInformationComponent = (props) => {
           </Button>
         </DialogContent>
       </Dialog>
+      {props.addContractedPersonError !== '' && props.addContractedPersonError !== undefined ? (
+        <ToastComponent
+          toastMessage={'Error while saving data. Please try later...'}
+          openToast={props.addContractedPersonError !== ''}
+          handleClose={props.handleToastClose}
+          toastVariant={'error'}
+        />
+      ) : (
+        ''
+      )}
     </div>
   );
 };
@@ -887,7 +1100,9 @@ TravellerInformationComponent.propTypes = {
   handleAddressFieldChanges: PropTypes.func,
   handleSave: PropTypes.func,
   locationDetails: PropTypes.any,
-  handleAddressFieldsOnValueChange: PropTypes.func
+  handleAddressFieldsOnValueChange: PropTypes.func,
+  addContractedPersonError: PropTypes.string,
+  handleToastClose: PropTypes.func,
 };
 
 export default TravellerInformationComponent;
