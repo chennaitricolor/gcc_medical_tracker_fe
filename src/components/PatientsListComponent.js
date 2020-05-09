@@ -9,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { Tooltip } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import { formatDateToMMDDYYYYWithTimeFormat } from '../utils/GeneralUtils';
 
 const useStyles = makeStyles(theme => ({
     table: {
@@ -26,7 +27,7 @@ const getStyleByPersonStatus = (personStatus) => {
             return { color: '#555555', backgroundColor: '#EFF0F2', textAlign: 'center', height: '30px', paddingTop: '5px', width: '91px'};
         case 'urgent':
             return { color: '#A70000', backgroundColor: '#FFF0F1', textAlign: 'center', height: '30px', paddingTop: '5px', width: '91px'};
-        case 'quarantine':
+        case 'quarantined':
             return { color: '#0B1A89', backgroundColor: '#EBF5FF', textAlign: 'center', height: '30px', paddingTop: '5px', width: '91px'};
         default:
             return {}
@@ -36,6 +37,50 @@ const getStyleByPersonStatus = (personStatus) => {
 const PatientsListComponent = (props) => {
     const classes = useStyles();
     const { personsList } = props;
+
+    const getCurrentAddress = (address) => {
+        const street = address.street !== null ? address.street + ',' : '';
+        const area = address.area !== null ? address.area + ',' : '';
+        const city = address.city !== null ? address.city + ',' : '';
+        const state = address.state !== null ? address.state + ',' : '';
+        const pinCode = address.pinCode !== null ? address.pinCode : '';
+        return street + area + city + state + pinCode;
+    };
+
+    const getPersonStatusText = (personCallTransactions) => {
+        const personStatus = getCurrentPersonStatus(personCallTransactions);
+        switch(personStatus) {
+            case 'quarantined':
+                return 'Quarantine';
+            case 'symptomatic':
+                return 'Symptomatic';
+            case 'recovered':
+                return 'Recovered';
+            case 'deceased':
+                return 'Deceased';
+            case 'urgent':
+                return 'Urgent';
+            default:
+                return '';
+        }
+    }
+
+    const getLastContactedDate = (callTransactionList) => {
+        if(callTransactionList.length <= 0) {
+            return '';
+        }
+        const lastTransaction = callTransactionList[callTransactionList.length -1];
+        return formatDateToMMDDYYYYWithTimeFormat(new Date(lastTransaction.call_date), 'DD-MMM-YYYY');
+    };
+
+    const getCurrentPersonStatus = (callTransactionList) => {
+        if(callTransactionList.length <= 0) {
+            return '';
+        }
+        const lastTransaction = callTransactionList[callTransactionList.length -1];
+        return lastTransaction.health_status;
+
+    };
 
     return (
         <TableContainer component={Paper} style={{marginLeft: '1%', marginRight: '1%', width: 'auto', marginTop: '2%'}}>
@@ -52,8 +97,8 @@ const PatientsListComponent = (props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody style={{marginTop: '1%'}}>
-                    {personsList.map((row) => (
-                        <TableRow key={row.id}>
+                    {personsList.map((row, index) => (
+                        <TableRow key={index}>
                             <TableCell component="th" scope="row">
                                 <Tooltip title={row.name} interactive>
                                     <Typography style={{ float: 'left', width: '120px', textOverflow: 'ellipsis', overflow: 'hidden' }} noWrap>
@@ -61,18 +106,18 @@ const PatientsListComponent = (props) => {
                                     </Typography>
                                 </Tooltip>
                             </TableCell>
-                            <TableCell align="left">{row.age}</TableCell>
+                            <TableCell align="left">{row.age + '/' + row.gender}</TableCell>
                             <TableCell align="left">
-                                <Tooltip title={row.address} interactive>
+                                <Tooltip title={getCurrentAddress(row.currentAddress)} interactive>
                                     <Typography style={{ float: 'left', width: '120px', textOverflow: 'ellipsis', overflow: 'hidden' }} noWrap>
-                                        {row.address}
+                                        {getCurrentAddress(row.currentAddress)}
                                     </Typography>
                                 </Tooltip>
                             </TableCell>
-                            <TableCell align="left">{row.phone}</TableCell>
-                            <TableCell align="left">{row.trackingStatus}</TableCell>
-                            <TableCell align="left">{row.lastContacted}</TableCell>
-                            <TableCell align="left"><div style ={getStyleByPersonStatus(row.personStatus)}>{row.personStatus}</div></TableCell>
+                            <TableCell align="left">{row.phoneNumber}</TableCell>
+                            <TableCell align="left">{formatDateToMMDDYYYYWithTimeFormat(new Date(row.trackingSince), 'DD-MMM-YYYY')}</TableCell>
+                            <TableCell align="left">{getLastContactedDate(row.person_call_transactions)}</TableCell>
+                            <TableCell align="left"><div style ={getStyleByPersonStatus(getCurrentPersonStatus(row.person_call_transactions))}>{getPersonStatusText(row.person_call_transactions)}</div></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

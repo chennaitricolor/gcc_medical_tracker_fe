@@ -56,6 +56,13 @@ const DetailedStatsByZoneContainer = (props) => {
 
     };
 
+    const getPersonsByWardFromAPI = (personsByWard) => {
+        if(personsByWard.personsByWard !== undefined && personsByWard.personsByWard.success) {
+            return personsByWard.personsByWard.persons;
+        }
+        return [];
+    };
+
     const getElementsToRender = () => {
         const getPersonsByWard = personsByWard;
         if((getPersonsByWard !== undefined && getPersonsByWard.isLoading)) {
@@ -67,7 +74,7 @@ const DetailedStatsByZoneContainer = (props) => {
 
                 <DetailedStatsByZoneComponent handleSearchTextChange={handleSearchTextChange}
                                               handleFilterChange={handleFilterChange} wardsList={props.wards}
-                                              handleWardSelection={handleWardSelection} selectedWard={selectedWard} personsList={personsList}/>
+                                              handleWardSelection={handleWardSelection} selectedWard={selectedWard} personsList={getPersonsByWardFromAPI(personsByWard)}/>
             </div>);
         }
 
