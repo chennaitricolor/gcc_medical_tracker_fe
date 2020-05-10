@@ -5,7 +5,7 @@ import { apiUrls } from '../utils/constants';
 
 export default function* updateContractedPersonsSaga(action) {
   try {
-    const api = apiUrls.updateContractedPersons.replace(':id', '12');
+    const api = apiUrls.updateContractedPersons.replace(':id', action.payload.patientId);
     const response = yield call(callFetchApi, api, {}, 'PUT', action.payload.contractedDetails);
     if (response.data !== undefined && response.data.success) {
       yield put({
