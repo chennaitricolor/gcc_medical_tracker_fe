@@ -13,11 +13,12 @@ import FormLabel from '@material-ui/core/FormLabel';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import { DatePicker, DateTimePicker } from "@material-ui/pickers";
+import { DatePicker, DateTimePicker } from '@material-ui/pickers';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import InputMask from 'react-input-mask';
-import ToastComponent from "./ToastComponent";
+import ToastComponent from './ToastComponent';
+import { formatDateBasedOnFormat } from '../utils/GeneralUtils';
 
 const useStyles = makeStyles(() => ({
   heading: {
@@ -156,6 +157,22 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const getLastContactedDate = (callTransactionList) => {
+  if (callTransactionList.length <= 0) {
+    return '';
+  }
+  const lastTransaction = callTransactionList[callTransactionList.length - 1];
+  return formatDateBasedOnFormat(new Date(lastTransaction.call_date), 'DD-MMM-YYYY');
+};
+
+const getCurrentPersonStatus = (callTransactionList) => {
+  if (callTransactionList.length <= 0) {
+    return '';
+  }
+  const lastTransaction = callTransactionList[callTransactionList.length - 1];
+  return lastTransaction.health_status;
+};
+
 const getStyleByPersonStatus = (personStatus) => {
   const personStatusInLoweCase = personStatus.toLowerCase();
   switch (personStatusInLoweCase) {
@@ -195,7 +212,7 @@ const getStyleByPersonStatus = (personStatus) => {
         paddingTop: '5px',
         display: 'inline-block',
       };
-    case 'quarantine':
+    case 'quarantined':
       return {
         color: '#0B1A89',
         backgroundColor: '#EBF5FF',
@@ -209,9 +226,36 @@ const getStyleByPersonStatus = (personStatus) => {
   }
 };
 
-function renderTextFieldForAddress(label, key, basicDetails, handleOnChange, styles, multilineRequired = false, idx = null, calledBy) {
-  const address = basicDetails !== undefined && basicDetails.address !== undefined ? basicDetails.address : {};
+const getPersonStatusText = (personCallTransactions) => {
+  const personStatus = getCurrentPersonStatus(personCallTransactions);
+  switch (personStatus) {
+    case 'quarantined':
+      return 'Quarantine';
+    case 'symptomatic':
+      return 'Symptomatic';
+    case 'recovered':
+      return 'Recovered';
+    case 'deceased':
+      return 'Deceased';
+    case 'urgent':
+      return 'Urgent';
+    default:
+      return '';
+  }
+};
 
+function renderTextFieldForAddress(
+  label,
+  key,
+  basicDetails,
+  handleOnChange,
+  styles,
+  multilineRequired = false,
+  idx = null,
+  calledBy,
+  source = null,
+  sourceKey = null,
+) {
   return (
     <TextField
       className={'traveller-information-' + key + ' ' + styles.textField}
@@ -219,8 +263,8 @@ function renderTextFieldForAddress(label, key, basicDetails, handleOnChange, sty
       id={key}
       value={jsonPath({
         flatten: true,
-        json: address,
-        path: key,
+        json: source !== null ? source : basicDetails,
+        path: sourceKey !== null ? sourceKey : key,
         wrap: false,
       })}
       multiline={multilineRequired}
@@ -282,6 +326,8 @@ function renderDropDownFieldForAsyncAPICall(
   matchStyle,
   idx = null,
   calledBy,
+  source = null,
+  sourceKey = null
 ) {
   let dropDownValues = dropdownList !== undefined ? dropdownList : [];
   if (key === 'street_name') {
@@ -299,6 +345,12 @@ function renderDropDownFieldForAsyncAPICall(
       classes={{
         option: styles.option,
       }}
+      value={jsonPath({
+        flatten: true,
+        json: source !== null ? source : addressDetails,
+        path: sourceKey !== null ? sourceKey : key,
+        wrap: false,
+      })}
       getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
       onChange={(event, value) => handleInputValueChange(value, key, 'dropdown', idx, calledBy)}
       onInputChange={(event, value) => {
@@ -320,7 +372,19 @@ function renderDropDownFieldForAsyncAPICall(
   );
 }
 
-function renderDropDownFieldForAddress(label, key, dropdownList, travellerInformation, handleOnChange, styles, matchStyle, idx = null, calledBy) {
+function renderDropDownFieldForAddress(
+  label,
+  key,
+  dropdownList,
+  travellerInformation,
+  handleOnChange,
+  styles,
+  matchStyle,
+  idx = null,
+  calledBy,
+  source = null,
+  sourceKey = null,
+) {
   return (
     <Autocomplete
       className={'traveller-information-' + key + ' ' + styles.label}
@@ -331,6 +395,12 @@ function renderDropDownFieldForAddress(label, key, dropdownList, travellerInform
       classes={{
         option: styles.option,
       }}
+      value={jsonPath({
+        flatten: true,
+        json: source !== null ? source : travellerInformation,
+        path: sourceKey !== null ? sourceKey : key,
+        wrap: false,
+      })}
       getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
       onChange={(event, value) => handleOnChange(value, key, 'dropdown', idx, calledBy)}
       renderInput={(params) => (
@@ -360,9 +430,14 @@ function renderDropDownField(label, key, dropdownList, travellerInformation, han
       classes={{
         option: styles.option,
       }}
+      value={jsonPath({
+        flatten: true,
+        json: travellerInformation,
+        path: key,
+        wrap: false,
+      })}
       getOptionLabel={(option) => (option.label !== undefined ? option.label : option)}
       onChange={(event, value) => handleOnChange(value, key, 'dropdown', idx)}
-      //onInputChange={(event, value) => {handleOnChange(value, event)}}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -419,11 +494,11 @@ function renderDateField(label, key, dateFormat, type, campaignDetails, handleOn
             wrap: false,
           }) !== undefined
             ? jsonPath({
-              flatten: true,
-              json: campaignDetails,
-              path: key,
-              wrap: false,
-            })
+                flatten: true,
+                json: campaignDetails,
+                path: key,
+                wrap: false,
+              })
             : null
         }
         onChange={(date) => handleOnChange(date, key, 'date', idx, dateFormat)}
@@ -448,11 +523,11 @@ function renderDateField(label, key, dateFormat, type, campaignDetails, handleOn
             wrap: false,
           }) !== undefined
             ? jsonPath({
-              flatten: true,
-              json: campaignDetails,
-              path: key,
-              wrap: false,
-            })
+                flatten: true,
+                json: campaignDetails,
+                path: key,
+                wrap: false,
+              })
             : null
         }
         onChange={(date) => handleOnChange(date, key, 'date', idx, dateFormat)}
@@ -478,8 +553,8 @@ const yesNoRadioButton = [
 
 const callFailureReasonRadioButton = [
   { label: 'Call Not Picked', value: 'callNotPicked' },
+  { label: 'Incorrect Phone Number', value: 'incorrectPhoneNumber' },
   { label: 'Wrong Number', value: 'wrongNumber' },
-  { label: 'Not Reachable', value: 'notReachable' },
 ];
 
 const personStatusRadioButton = [{ label: 'Quarantine', value: 'quarantined' }];
@@ -524,12 +599,25 @@ const TravellerInformationComponent = (props) => {
               display: 'inline-block',
               float: 'right',
               fontSize: '14px',
-              width: '50%',
+              width: '60%',
             }}
           >
-            {/*<Typography style={{ display: 'inline-block', marginRight: '5%' }}> Tracking Since: {'12 Mar 2020'}</Typography>*/}
-            {/*<Typography style={{ display: 'inline-block', marginRight: '5%' }}>Last Call: {'10 Apr 2020'}</Typography>*/}
-            {/*<Typography style={getStyleByPersonStatus('URGENT')}>{'URGENT'}</Typography>*/}
+            {props.type === 'UPDATE' ? (
+              <div style={{ display: 'inline-block', width: '80%' }}>
+                <Typography style={{ display: 'inline-block', marginRight: '5%' }}>
+                  {' '}
+                  Tracking Since: {formatDateBasedOnFormat(new Date(props.rowData.trackingSince), 'DD-MMM-YYYY')}
+                </Typography>
+                <Typography style={{ display: 'inline-block', marginRight: '5%' }}>
+                  Last Call: {getLastContactedDate(props.rowData.person_call_transactions)}
+                </Typography>
+                <Typography style={getStyleByPersonStatus(getCurrentPersonStatus(props.rowData.person_call_transactions))}>
+                  {getPersonStatusText(props.rowData.person_call_transactions)}
+                </Typography>
+              </div>
+            ) : (
+              ''
+            )}
             <Button variant="outlined" style={{ border: 'none', float: 'right', padding: '0' }} onClick={props.handleCloseForDialog}>
               <CloseIcon />
             </Button>
@@ -573,7 +661,15 @@ const TravellerInformationComponent = (props) => {
             {props.basicDetails.travelledAbroad === 'Y' ? (
               <div>
                 {renderTextField('Country Travelled From', 'countryVisited', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
-                {renderDateField('Date Of Arrival', 'dateOfArraival', 'DD-MM-YYYY', 'date', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
+                {renderDateField(
+                  'Date Of Arrival',
+                  'dateOfArraival',
+                  'DD-MM-YYYY',
+                  'date',
+                  props.basicDetails,
+                  props.handleOnChangeForBasicDetails,
+                  styles,
+                )}
               </div>
             ) : (
               ''
@@ -613,6 +709,8 @@ const TravellerInformationComponent = (props) => {
                 matchStyleForDropdown,
                 null,
                 'Basic Details',
+                props.basicDetails.address,
+                'type',
               )}
               {renderTextFieldForAddress(
                 'Flat/Home Number and Floor',
@@ -623,6 +721,8 @@ const TravellerInformationComponent = (props) => {
                 false,
                 null,
                 'Basic Details',
+                props.basicDetails.address,
+                'numberAndFloor'
               )}
               {renderDropDownFieldForAsyncAPICall(
                 'Street',
@@ -635,6 +735,8 @@ const TravellerInformationComponent = (props) => {
                 matchStyleForDropdown,
                 null,
                 'Basic Details',
+                props.basicDetails.address,
+                'street',
               )}
               {renderDropDownFieldForAsyncAPICall(
                 'Area',
@@ -647,6 +749,8 @@ const TravellerInformationComponent = (props) => {
                 matchStyleForDropdown,
                 null,
                 'Basic Details',
+                props.basicDetails.address,
+                'area',
               )}
               {renderTextFieldForAddress(
                 'City',
@@ -657,6 +761,8 @@ const TravellerInformationComponent = (props) => {
                 false,
                 null,
                 'Basic Details',
+                props.basicDetails.address,
+                'city'
               )}
               <div style={{ marginTop: '2%' }}>
                 {renderTextFieldForAddress(
@@ -668,6 +774,8 @@ const TravellerInformationComponent = (props) => {
                   false,
                   null,
                   'Basic Details',
+                  props.basicDetails.address,
+                  'state'
                 )}
                 {renderTextFieldForAddress(
                   'Pin Code',
@@ -678,6 +786,8 @@ const TravellerInformationComponent = (props) => {
                   false,
                   null,
                   'Basic Details',
+                  props.basicDetails.address,
+                  'pinCode'
                 )}
               </div>
             </div>
@@ -777,6 +887,8 @@ const TravellerInformationComponent = (props) => {
                     matchStyleForDropdown,
                     null,
                     'Transaction Details',
+                    props.transactionDetails.currentAddress,
+                    'type',
                   )}
                   {renderTextFieldForAddress(
                     'Flat/Home Number and Floor',
@@ -787,6 +899,8 @@ const TravellerInformationComponent = (props) => {
                     false,
                     null,
                     'Transaction Details',
+                    props.transactionDetails.currentAddress,
+                    'numberAndFloor',
                   )}
                   {renderDropDownFieldForAsyncAPICall(
                     'Street',
@@ -799,6 +913,8 @@ const TravellerInformationComponent = (props) => {
                     matchStyleForDropdown,
                     null,
                     'Transaction Details',
+                    props.transactionDetails.currentAddress,
+                    'street',
                   )}
                   {renderDropDownFieldForAsyncAPICall(
                     'Area',
@@ -811,6 +927,8 @@ const TravellerInformationComponent = (props) => {
                     matchStyleForDropdown,
                     null,
                     'Transaction Details',
+                    props.transactionDetails.currentAddress,
+                    'area',
                   )}
                   {renderTextFieldForAddress(
                     'City',
@@ -821,6 +939,8 @@ const TravellerInformationComponent = (props) => {
                     false,
                     null,
                     'Transaction Details',
+                    props.transactionDetails.currentAddress,
+                    'city'
                   )}
                   <div style={{ marginTop: '2%' }}>
                     {renderTextFieldForAddress(
@@ -832,6 +952,8 @@ const TravellerInformationComponent = (props) => {
                       false,
                       null,
                       'Transaction Details',
+                      props.transactionDetails.currentAddress,
+                      'state'
                     )}
                     {renderTextFieldForAddress(
                       'Pin Code',
@@ -842,6 +964,8 @@ const TravellerInformationComponent = (props) => {
                       false,
                       null,
                       'Transaction Details',
+                      props.transactionDetails.currentAddress,
+                      'pinCode'
                     )}
                   </div>
                 </div>
@@ -922,6 +1046,8 @@ const TravellerInformationComponent = (props) => {
                           matchStyleForDropdown,
                           idx,
                           'Travel Details',
+                          field.address,
+                          'type',
                         )}
                         {renderTextFieldForAddress(
                           'Flat/Home Number and Floor',
@@ -932,6 +1058,8 @@ const TravellerInformationComponent = (props) => {
                           false,
                           idx,
                           'Travel Details',
+                          field.address,
+                          'numberAndFloor'
                         )}
                         {renderDropDownFieldForAsyncAPICall(
                           'Street',
@@ -944,6 +1072,8 @@ const TravellerInformationComponent = (props) => {
                           matchStyleForDropdown,
                           idx,
                           'Travel Details',
+                          field.address,
+                          'street',
                         )}
                         {renderDropDownFieldForAsyncAPICall(
                           'Area',
@@ -956,6 +1086,8 @@ const TravellerInformationComponent = (props) => {
                           matchStyleForDropdown,
                           idx,
                           'Travel Details',
+                          field.address,
+                          'area',
                         )}
                         {renderTextFieldForAddress(
                           'City',
@@ -966,6 +1098,8 @@ const TravellerInformationComponent = (props) => {
                           false,
                           idx,
                           'Travel Details',
+                          field.address,
+                          'city'
                         )}
                         <div style={{ marginTop: '2%' }}>
                           {renderTextFieldForAddress(
@@ -977,6 +1111,8 @@ const TravellerInformationComponent = (props) => {
                             false,
                             idx,
                             'Travel Details',
+                            field.address,
+                            'state'
                           )}
                           {renderTextFieldForAddress(
                             'Pin Code',
@@ -987,6 +1123,8 @@ const TravellerInformationComponent = (props) => {
                             false,
                             idx,
                             'Travel Details',
+                            field.address,
+                            'pinCode'
                           )}
                         </div>
                       </div>
@@ -1083,6 +1221,7 @@ const TravellerInformationComponent = (props) => {
 TravellerInformationComponent.propTypes = {
   showDialog: PropTypes.bool,
   handleCloseForDialog: PropTypes.func,
+  type: PropTypes.string,
   basicDetails: PropTypes.object,
   callDetails: PropTypes.object,
   transactionDetails: PropTypes.object,

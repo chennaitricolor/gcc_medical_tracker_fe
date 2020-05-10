@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export function formatDateToMMDDYYYYWithTimeFormat(date, format) {
+export function formatDateBasedOnFormat(date, format) {
   if (date === null || date === undefined) {
     return '';
   }

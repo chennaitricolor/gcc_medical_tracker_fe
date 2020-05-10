@@ -1,19 +1,24 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import TravellerInformationComponent from '../components/TravellerInformationComponent';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
-import { formatDateToMMDDYYYYWithTimeFormat } from '../utils/GeneralUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import * as PropTypes from 'prop-types';
-import getLocationsByType from '../actions/GetLocationsByType';
+import TravellerInformationComponent from '../components/TravellerInformationComponent';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import ToastComponent from '../components/ToastComponent';
 import toastActions from '../actions/ToastAction';
+import MomentUtils from '@date-io/moment';
+import { formatDateBasedOnFormat } from '../utils/GeneralUtils';
+import getLocationsByType from '../actions/GetLocationsByType';
+import LoadingComponent from '../components/LoadingComponent';
+import _ from 'lodash';
 
 const TravellerInformationContainer = (props) => {
   const dispatch = useDispatch();
 
   const locationsList = useSelector((state) => state.getLocationsByTypeReducer);
-  const addContractedPersonResponse = useSelector((state) => state.addContractedPersonReducer);
+  const addContractedPersonResponse = useSelector((state) => state.contractedPersonReducer);
+
+  const personDetails = useSelector((state) => state.getPersonsDetailReducer.personDetails);
+  const isLoading = useSelector((state) => state.getPersonsDetailReducer.isLoading);
 
   const [basicDetails, setBasicDetails] = useReducer((state, newState) => ({ ...state, ...newState }), {
     name: '',
@@ -52,7 +57,7 @@ const TravellerInformationContainer = (props) => {
   });
 
   const [transactionDetails, setTransactionDetails] = useReducer((state, newState) => ({ ...state, ...newState }), {
-    currentAddressSame: '',
+    currentAddressSame: undefined,
     currentAddress: {
       type: '',
       numberAndFloor: '',
@@ -110,7 +115,7 @@ const TravellerInformationContainer = (props) => {
           callType: undefined,
         });
         setTransactionDetails({
-          currentAddressSame: '',
+          currentAddressSame: undefined,
           currentAddress: {
             type: '',
             numberAndFloor: '',
@@ -128,6 +133,88 @@ const TravellerInformationContainer = (props) => {
       };
     }
   }, [props.showDialog]);
+
+  const getValue = (value) => {
+    if (value !== null && value !== '') {
+      return value;
+    }
+    return undefined;
+  };
+
+  useEffect(() => {
+    if (props.type === 'UPDATE') {
+      if (personDetails !== null) {
+        if (personDetails.basic !== undefined) {
+          setBasicDetails({
+            name: getValue(personDetails.basic.name),
+            age: getValue(personDetails.basic.age),
+            gender: getValue(personDetails.basic.gender),
+            passport: getValue(personDetails.basic.passport_no),
+            phoneNumber: getValue(personDetails.basic.phone_number),
+            secondaryPhoneNumber: getValue(personDetails.basic.secondary_phone_number),
+            travelledAbroad: getValue(personDetails.basic.travel_history_indicator),
+            countryVisited: getValue(personDetails.basic.country_visited),
+            dateOfArraival: getValue(formatDateBasedOnFormat(personDetails.basic.date_of_arrival, 'MM-DD-YYYY')),
+            remarks: getValue(personDetails.basic.remarks),
+            familyMembersCount: getValue(personDetails.basic.number_of_family_members),
+            diabetesIndicator: getValue(personDetails.basic.diabetes_indicator),
+            hyperTensionIndicator: getValue(personDetails.basic.hypertension_indicator),
+            otherIllness: getValue(personDetails.basic.other_illness),
+            address: {
+              type: personDetails.basic.permanentAddress.buildingType,
+              numberAndFloor: personDetails.basic.permanentAddress.flatBuildingNoAndFloor,
+              street: personDetails.basic.permanentAddress.street,
+              area: personDetails.basic.permanentAddress.area,
+              city: personDetails.basic.permanentAddress.city,
+              state: personDetails.basic.permanentAddress.state,
+              pinCode: personDetails.basic.permanentAddress.pinCode,
+              locationId: personDetails.basic.permanentAddress.locationId,
+            },
+          });
+        }
+        if (personDetails.lastCall !== undefined && personDetails.lastCall !== null) {
+          setTransactionDetails({
+            currentAddressSame: 'Y',
+            currentAddress: {
+              type: personDetails.lastCall.address.buildingType,
+              numberAndFloor: personDetails.lastCall.address.flatBuildingNoAndFloor,
+              street: personDetails.lastCall.address.street,
+              area: personDetails.lastCall.address.area,
+              city: personDetails.lastCall.address.city,
+              state: personDetails.lastCall.address.state,
+              pinCode: personDetails.lastCall.address.pinCode,
+              locationId: personDetails.lastCall.address.locationId,
+            },
+            healthStatus: getValue(personDetails.lastCall.person_status),
+            symptoms: getValue(personDetails.lastCall.symptoms),
+            dateOfFirstSymptom: getValue(formatDateBasedOnFormat(personDetails.lastCall.date_of_first_symptom, 'MM-DD-YYYY')),
+          });
+        }
+        if (personDetails.travel !== null) {
+          const values = [...travelDetails];
+          personDetails.travel.forEach((travel) => {
+            values.push({
+              placeOfVisit: travel.place_of_visit,
+              placeType: travel.place_type,
+              visitedDate: formatDateBasedOnFormat(travel.date_and_time_of_travel, 'MM-DD-YYYY'),
+              modeOfTravel: travel.mode_of_travel,
+              address: {
+                type: travel.address.buildingType,
+                numberAndFloor: travel.address.flatBuildingNoAndFloor,
+                street: travel.address.street,
+                area: travel.address.area,
+                city: travel.address.city,
+                state: travel.address.state,
+                pinCode: travel.address.pinCode,
+                locationId: travel.address.locationId,
+              },
+            });
+          });
+          setTravelDetails(values);
+        }
+      }
+    }
+  }, [personDetails]);
 
   const handleOnChangeForBasicDetails = (event, id, type, idx, dateFormat) => {
     if (idx !== null) {
@@ -176,7 +263,7 @@ const TravellerInformationContainer = (props) => {
       if (type === 'date') {
         if (event !== null && event.valueOf() !== null) {
           setBasicDetails({
-            [id]: formatDateToMMDDYYYYWithTimeFormat(new Date(event.valueOf()), dateFormat),
+            [id]: formatDateBasedOnFormat(new Date(event.valueOf()), dateFormat),
           });
         } else {
           setBasicDetails({
@@ -234,7 +321,7 @@ const TravellerInformationContainer = (props) => {
       if (type === 'date') {
         if (event !== null && event.valueOf() !== null) {
           setCallDetails({
-            [id]: formatDateToMMDDYYYYWithTimeFormat(new Date(event.valueOf(), dateFormat)),
+            [id]: formatDateBasedOnFormat(new Date(event.valueOf(), dateFormat)),
           });
         } else {
           setCallDetails({
@@ -270,7 +357,7 @@ const TravellerInformationContainer = (props) => {
       if (type === 'date') {
         if (event !== null && event.valueOf() !== null) {
           setTransactionDetails({
-            [id]: formatDateToMMDDYYYYWithTimeFormat(new Date(event.valueOf()), dateFormat),
+            [id]: formatDateBasedOnFormat(new Date(event.valueOf()), dateFormat),
           });
         } else {
           setTransactionDetails({
@@ -461,7 +548,7 @@ const TravellerInformationContainer = (props) => {
         }
         if (type === 'date') {
           if (event !== null && event.valueOf() !== null) {
-            temp.splice(i, 1, { ...a, [id]: formatDateToMMDDYYYYWithTimeFormat(new Date(event.valueOf()), dateFormat) });
+            temp.splice(i, 1, { ...a, [id]: formatDateBasedOnFormat(new Date(event.valueOf()), dateFormat) });
           } else {
             temp.splice(i, 1, { ...a, [id]: null });
           }
@@ -549,8 +636,10 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleSave = () => {
-    if (transactionDetails.currentAddressSame === 'Y') {
+    if (transactionDetails.currentAddressSame === 'Y' && props.type === 'UPDATE') {
       transactionDetails.currentAddress = basicDetails.address;
+      transactionDetails.currentAddressChanged = transactionDetails.currentAddressSame;
+      transactionDetails.currentAddressSame = undefined;
     }
     if (props.type === 'ADD') {
       dispatch({
@@ -570,9 +659,13 @@ const TravellerInformationContainer = (props) => {
         },
       });
     } else if (props.type === 'UPDATE') {
-      // TODO Failure Indicator
+      if (_.isEqual(basicDetails.address, personDetails.basic.permanentAddress)) {
+        Object.assign(basicDetails, basicDetails, { addressChanged: 'N' });
+      } else {
+        Object.assign(basicDetails, basicDetails, { addressChanged: 'Y' });
+      }
       dispatch({
-        type: 'ADD_CONTRACTED_PERSONS',
+        type: 'UPDATE_CONTRACTED_PERSONS',
         payload: {
           contractedDetails: {
             basicDetails: basicDetails,
@@ -580,6 +673,13 @@ const TravellerInformationContainer = (props) => {
               phoneNumber: callDetails.phoneNumber,
               answeredBy: callDetails.answeredBy,
               isSuspected: callDetails.isSuspected,
+              callSuccessfulIndicator: callDetails.callSuccessFulIndicator,
+              wrongNumberIndicator: callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'wrongNumber' ? 'Y' : 'N') : 'N',
+              callNotRespondingIndicator:
+                callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'callNotPicked' ? 'Y' : 'N') : 'N',
+              incorrectPhoneNumber:
+                callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'incorrectPhoneNumber' ? 'Y' : 'N') : 'N',
+              inboundOrOutbound: 'outgoing',
             },
             transactionDetails: transactionDetails,
           },
@@ -592,63 +692,65 @@ const TravellerInformationContainer = (props) => {
     dispatch({
       type: toastActions.CLOSE_NOTIFICATION_DIALOG_OR_TOAST_MESSAGE,
     });
-    props.handleCloseForDialog();
-    setBasicDetails({
-      name: '',
-      age: '',
-      gender: '',
-      passport: undefined,
-      phoneNumber: '',
-      secondaryPhoneNumber: undefined,
-      travelledAbroad: '',
-      countryVisited: undefined,
-      dateOfArraival: undefined,
-      remarks: undefined,
-      familyMembersCount: '',
-      diabetesIndicator: '',
-      hyperTensionIndicator: '',
-      otherIllness: undefined,
-      address: {
-        type: '',
-        numberAndFloor: '',
-        street: '',
-        area: '',
-        city: '',
-        state: '',
-        pinCode: '',
-        locationId: '',
-      },
-    });
-    setCallDetails({
-      phoneNumber: '',
-      answeredBy: undefined,
-      isSuspected: '',
-      callSuccessFulIndicator: undefined,
-      callFailureReason: undefined,
-      callType: undefined,
-    });
-    setTransactionDetails({
-      currentAddressSame: '',
-      currentAddress: {
-        type: '',
-        numberAndFloor: '',
-        street: '',
-        area: '',
-        city: '',
-        state: '',
-        pinCode: '',
-        locationId: '',
-      },
-      healthStatus: '',
-      symptoms: undefined,
-      dateOfFirstSymptom: undefined,
-    });
+    if (addContractedPersonResponse.addContractedPersonMessage !== '' && addContractedPersonResponse.addContractedPersonMessage !== undefined) {
+      props.handleCloseForDialog();
+      setBasicDetails({
+        name: '',
+        age: '',
+        gender: '',
+        passport: undefined,
+        phoneNumber: '',
+        secondaryPhoneNumber: undefined,
+        travelledAbroad: '',
+        countryVisited: undefined,
+        dateOfArraival: undefined,
+        remarks: undefined,
+        familyMembersCount: '',
+        diabetesIndicator: '',
+        hyperTensionIndicator: '',
+        otherIllness: undefined,
+        address: {
+          type: '',
+          numberAndFloor: '',
+          street: '',
+          area: '',
+          city: '',
+          state: '',
+          pinCode: '',
+          locationId: '',
+        },
+      });
+      setCallDetails({
+        phoneNumber: '',
+        answeredBy: undefined,
+        isSuspected: '',
+        callSuccessFulIndicator: undefined,
+        callFailureReason: undefined,
+        callType: undefined,
+      });
+      setTransactionDetails({
+        currentAddressSame: undefined,
+        currentAddress: {
+          type: '',
+          numberAndFloor: '',
+          street: '',
+          area: '',
+          city: '',
+          state: '',
+          pinCode: '',
+          locationId: '',
+        },
+        healthStatus: '',
+        symptoms: undefined,
+        dateOfFirstSymptom: undefined,
+      });
+    }
   };
 
   if (addContractedPersonResponse.addContractedPersonMessage !== '' && addContractedPersonResponse.addContractedPersonMessage !== undefined) {
     return (
       <ToastComponent
-        toastMessage={'Record created successfully'}
+        toastMessage={addContractedPersonResponse.addContractedPersonMessage}
         openToast={addContractedPersonResponse.addContractedPersonMessage !== ''}
         handleClose={handleToastClose}
         toastVariant={'success'}
@@ -658,30 +760,36 @@ const TravellerInformationContainer = (props) => {
     return (
       <div>
         <MuiPickersUtilsProvider utils={MomentUtils}>
-          <TravellerInformationComponent
-            showDialog={props.showDialog}
-            handleCloseForDialog={props.handleCloseForDialog}
-            basicDetails={basicDetails}
-            callDetails={callDetails}
-            transactionDetails={transactionDetails}
-            travelDetails={travelDetails}
-            contractedFields={contractedPersonFields}
-            handleOnChangeForBasicDetails={handleOnChangeForBasicDetails}
-            handleOnChangeForCallDetails={handleOnChangeForCallDetails}
-            handleOnChangeForTransactionDetails={handleOnChangeForTransactionDetails}
-            handleChangeForTravelDetailsDynamicFields={handleChangeForTravelDetailsDynamicFields}
-            handleChangeForContractedPersonsDynamicFields={handleChangeForContractedPersonsDynamicFields}
-            handleAddForTravelDetails={handleAddForTravelDetails}
-            handleAddForContractedFields={handleAddForContractedFields}
-            handleRemoveForTravelFields={handleRemoveForTravelFields}
-            handleRemoveForContractedFields={handleRemoveForContractedFields}
-            handleAddressFieldChanges={handleAddressFieldInput}
-            handleAddressFieldsOnValueChange={handleAddressFieldValuesOnChange}
-            handleSave={handleSave}
-            locationDetails={locationsList.locationsByType}
-            addContractedPersonError={addContractedPersonResponse.addContractedPersonError}
-            handleToastClose={handleToastClose}
-          />
+          {isLoading ? (
+            <LoadingComponent />
+          ) : (
+            <TravellerInformationComponent
+              showDialog={props.showDialog}
+              handleCloseForDialog={props.handleCloseForDialog}
+              type={props.type}
+              rowData={props.rowData}
+              basicDetails={basicDetails}
+              callDetails={callDetails}
+              transactionDetails={transactionDetails}
+              travelDetails={travelDetails}
+              contractedFields={contractedPersonFields}
+              handleOnChangeForBasicDetails={handleOnChangeForBasicDetails}
+              handleOnChangeForCallDetails={handleOnChangeForCallDetails}
+              handleOnChangeForTransactionDetails={handleOnChangeForTransactionDetails}
+              handleChangeForTravelDetailsDynamicFields={handleChangeForTravelDetailsDynamicFields}
+              handleChangeForContractedPersonsDynamicFields={handleChangeForContractedPersonsDynamicFields}
+              handleAddForTravelDetails={handleAddForTravelDetails}
+              handleAddForContractedFields={handleAddForContractedFields}
+              handleRemoveForTravelFields={handleRemoveForTravelFields}
+              handleRemoveForContractedFields={handleRemoveForContractedFields}
+              handleAddressFieldChanges={handleAddressFieldInput}
+              handleAddressFieldsOnValueChange={handleAddressFieldValuesOnChange}
+              handleSave={handleSave}
+              locationDetails={locationsList.locationsByType}
+              addContractedPersonError={addContractedPersonResponse.addContractedPersonError}
+              handleToastClose={handleToastClose}
+            />
+          )}
         </MuiPickersUtilsProvider>
       </div>
     );
@@ -692,6 +800,7 @@ TravellerInformationContainer.propTypes = {
   showDialog: PropTypes.bool,
   handleCloseForDialog: PropTypes.func,
   type: PropTypes.string,
+  rowData: PropTypes.object,
 };
 
 export default TravellerInformationContainer;

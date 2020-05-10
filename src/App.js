@@ -9,13 +9,19 @@ function App() {
   const [selectedTab, setSelectedTab] = useState(0);
 
   const [showDialog, setShowDialog] = useState(false);
+  const [type, setType] = useState('ADD');
+  const [rowData, setRowData] = useState(undefined);
 
-  const handleOpenForDialog = () => {
+  const handleOpenForDialog = (type, rowData) => {
     setShowDialog(true);
+    setType(type);
+    setRowData(rowData);
   };
 
   const handleCloseForDialog = () => {
     setShowDialog(false);
+    setType('ADD');
+    setRowData(undefined);
   };
 
   const handleTabChange = (event, newSelection) => {
@@ -30,8 +36,13 @@ function App() {
         handleTabChange={handleTabChange}
         handleOpenForDialog={handleOpenForDialog}
       />
-      <DashboardContainer selectedTab={selectedTab} />
-      <TravellerInformationContainer showDialog={showDialog} handleCloseForDialog={handleCloseForDialog} type={'ADD'} />
+      <DashboardContainer selectedTab={selectedTab} handleOpenForDialog={handleOpenForDialog} />
+      <TravellerInformationContainer
+        showDialog={showDialog}
+        handleCloseForDialog={handleCloseForDialog}
+        type={type}
+        rowData={rowData}
+      />
     </div>
   );
 }

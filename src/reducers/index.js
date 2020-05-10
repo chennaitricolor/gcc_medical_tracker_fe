@@ -4,7 +4,8 @@ import resetPasswordResponse from './ResetPasswordReducer';
 import getAllZonesReducer from './GetAllZonesReducer';
 import getPersonsByWardReducer from './GetPersonsByWardReducer';
 import getLocationsByTypeReducer from './GetLocationsByTypeReducer';
-import addContractedPersonReducer from './addContractedPersonReducer';
+import getPersonsDetailReducer from './getPersonsDetailReducer';
+import contractedPersonReducer from './contractedPersonReducer';
 
 const reducers = combineReducers({
   loginResponse,
@@ -12,7 +13,8 @@ const reducers = combineReducers({
   getAllZonesReducer,
   getPersonsByWardReducer,
   getLocationsByTypeReducer,
-  addContractedPersonReducer,
+  getPersonsDetailReducer,
+  contractedPersonReducer,
 });
 
 export default reducers;

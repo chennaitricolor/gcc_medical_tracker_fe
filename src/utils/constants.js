@@ -19,6 +19,8 @@ export const apiUrls = {
   getZones: '/medicaltracker/dashboard/zones',
   resetPassword: '/medicaltracker/auth/password',
   getPersonsByWard: '/medicaltracker/dashboard/wards/',
+  getPersonsDetails: '/medicaltracker//form/persons/:id',
   addContractedPersons: '/medicaltracker/form/persons',
-  locationsByType: '/medicaltracker/form/locations/street_name'
+  locationsByType: '/medicaltracker/form/locations/street_name',
+  updateContractedPersons: '/medicaltracker/form/persons/:id',
 };

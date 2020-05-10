@@ -52,7 +52,7 @@ export const HeaderComponent = (props) => {
             <Tab className={classes.tabTitle} label={headerTabsTitle.pipeline} />
             <Tab className={classes.tabTitle} label={headerTabsTitle.reports} />
           </Tabs>
-          <Button style={buttonStyle} variant={'contained'} color="secondary" onClick={props.handleOpenForDialog}>
+          <Button style={buttonStyle} variant={'contained'} color="secondary" onClick={() => props.handleOpenForDialog('ADD', null)}>
             ADD CONTRACTED
           </Button>
         </Toolbar>

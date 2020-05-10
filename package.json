@@ -16,6 +16,7 @@
     "express": "^4.17.1",
     "history": "latest",
     "http-proxy-middleware": "^1.0.3",
+    "lodash": "^4.17.15",
     "material-ui-phone-number": "^2.2.6",
     "material-ui-search-bar": "^0.4.2",
     "moment": "2.24.0",
