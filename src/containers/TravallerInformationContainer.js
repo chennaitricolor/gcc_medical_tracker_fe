@@ -711,102 +711,166 @@ const TravellerInformationContainer = (props) => {
   const isInvalidBasicDetails = () => {
     const address = basicDetails.address;
 
-    const isBasicDetailsInvalid = Object.keys(basicDetails).some(key => {
-      return !['passport', 'secondaryPhoneNumber', 'otherIllness', 'remarks', 'address', 'countryVisited', 'dateOfArraival'].includes(key) && (basicDetails[key] === '' || basicDetails[key] === undefined);
+    const isBasicDetailsInvalid = Object.keys(basicDetails).some((key) => {
+      return (
+        !['passport', 'secondaryPhoneNumber', 'otherIllness', 'remarks', 'address', 'countryVisited', 'dateOfArraival'].includes(key) &&
+        (basicDetails[key] === '' || basicDetails[key] === undefined)
+      );
     });
 
-     const isTravelledAbroadInvalid = (basicDetails['travelledAbroad'] === 'Y' && ((basicDetails['countryVisited'] === undefined || basicDetails['countryVisited'] === '') ||
-         (basicDetails['dateOfArraival'] === undefined || basicDetails['dateOfArraival'] === '')));
+    const isTravelledAbroadInvalid =
+      basicDetails['travelledAbroad'] === 'Y' &&
+      (basicDetails['countryVisited'] === undefined ||
+        basicDetails['countryVisited'] === '' ||
+        basicDetails['dateOfArraival'] === undefined ||
+        basicDetails['dateOfArraival'] === '');
 
-     const isAddressInvalid = Object.values(address).some(value => (value === '' || value === undefined));
+    const isAddressInvalid = Object.values(address).some((value) => value === '' || value === undefined);
     return isBasicDetailsInvalid || isAddressInvalid || isTravelledAbroadInvalid;
-  }
+  };
 
   const isInvalidCallDetails = () => {
-    const isCallDetailsParentInvalid = Object.keys(callDetails).some(key => {
-      return !['answeredBy', 'callType', 'callFailureReason'].includes((key)) && (callDetails[key] === '' || callDetails[key] === undefined);
+    const isCallDetailsParentInvalid = Object.keys(callDetails).some((key) => {
+      return !['answeredBy', 'callType', 'callFailureReason'].includes(key) && (callDetails[key] === '' || callDetails[key] === undefined);
     });
-    const isCallDetailsChildInvalid = (callDetails['callSuccessFulIndicator'] !== undefined && callDetails['callSuccessFulIndicator'] === 'N') && (callDetails['callFailureReason'] === '' || callDetails['callFailureReason'] === undefined);
+    const isCallDetailsChildInvalid =
+      callDetails['callSuccessFulIndicator'] !== undefined &&
+      callDetails['callSuccessFulIndicator'] === 'N' &&
+      (callDetails['callFailureReason'] === '' || callDetails['callFailureReason'] === undefined);
     return isCallDetailsChildInvalid || isCallDetailsParentInvalid;
-
-  }
+  };
 
   const isInvalidTransactionDetails = () => {
     const address = transactionDetails.address;
-    const isTransactionFieldsInvalid = Object.keys(transactionDetails).some(key => {
-      return !['symptoms', 'dateOfFirstSymptom', 'currentAddress'].includes(key) && (transactionDetails[key] === '' || transactionDetails[key] === undefined);
+    const isTransactionFieldsInvalid = Object.keys(transactionDetails).some((key) => {
+      return (
+        !['symptoms', 'dateOfFirstSymptom', 'currentAddress'].includes(key) &&
+        (transactionDetails[key] === '' || transactionDetails[key] === undefined)
+      );
     });
-    const isAddressInvalid = (transactionDetails['currentAddressSame'] !== undefined && transactionDetails['currentAddressSame'] === 'N') && (Object.values(address).some(value => (value === '' || value === undefined)));
+    const isAddressInvalid =
+      transactionDetails['currentAddressSame'] !== undefined &&
+      transactionDetails['currentAddressSame'] === 'N' &&
+      Object.values(address).some((value) => value === '' || value === undefined);
     return isAddressInvalid || isTransactionFieldsInvalid;
-  }
+  };
 
+  const isInvalidTravelDetails = () => {
+    let travelDetailsInvalid = false;
+    let isAddressInvalid = false;
+
+    if (travelDetails.length !== 0 && !(travelDetailsInvalid || isAddressInvalid)) {
+      travelDetails.forEach((travel) => {
+        const address = travel.address;
+
+        travelDetailsInvalid = Object.keys(travel).some((key) => travel[key] === '' || travel[key] === undefined);
+
+        isAddressInvalid = Object.values(address).some((value) => value === '' || value === undefined);
+      });
+    }
+    return travelDetailsInvalid || isAddressInvalid;
+  };
+
+  const isInvalidContractedPersonsDetails = () => {
+    let contractedPersonsInvalid = false;
+    let isAddressInvalid = false;
+
+    if (contractedPersonFields.length !== 0 && !(contractedPersonsInvalid || isAddressInvalid)) {
+      contractedPersonFields.forEach((persons) => {
+        const address = persons.address;
+
+        contractedPersonsInvalid = Object.keys(persons).some(
+          (key) => !['alternatePhoneNumber', 'address'].includes(key) && (persons[key] === '' || persons[key] === undefined),
+        );
+
+        isAddressInvalid =
+          persons['isAddressAvailable'] !== '' &&
+          persons['isAddressAvailable'] === 'Y' &&
+          (address === undefined ||
+            address.type === undefined ||
+            address.numberAndFloor === undefined ||
+            address.street === undefined ||
+            address.area === undefined ||
+            address.city === undefined ||
+            address.state === undefined ||
+            address.pinCode === undefined);
+      });
+    }
+    return contractedPersonsInvalid || isAddressInvalid;
+  };
 
   const handleSave = () => {
-
-    if(isInvalidBasicDetails() || isInvalidCallDetails() || isInvalidTransactionDetails()) {
+    if (
+      isInvalidBasicDetails() ||
+      isInvalidCallDetails() ||
+      isInvalidTransactionDetails() ||
+      isInvalidTravelDetails() ||
+      isInvalidContractedPersonsDetails()
+    ) {
       setShowError(true);
-    }
-    else {
-    if (transactionDetails.currentAddressSame === 'Y' && props.type === 'UPDATE') {
-      transactionDetails.currentAddress = basicDetails.address;
-      transactionDetails.currentAddressChanged = transactionDetails.currentAddressSame;
-      transactionDetails.currentAddressSame = undefined;
-    }
-    if (transactionDetails.currentAddressSame === 'Y' && props.type === 'ADD') {
-      transactionDetails.currentAddress = basicDetails.address;
-    }
-    if (contractedPersonFields.length !== 0) {
-      contractedPersonFields.forEach((contractedPersons) => {
-        if (contractedPersons.isAddressAvailable !== 'Y') contractedPersons.address = undefined;
-      });
-    }
-    if (props.type === 'ADD') {
-      dispatch({
-        type: 'ADD_CONTRACTED_PERSONS',
-        payload: {
-          contractedDetails: {
-            basicDetails: basicDetails,
-            callDetails: {
-              phoneNumber: callDetails.phoneNumber,
-              answeredBy: callDetails.answeredBy,
-              isSuspected: callDetails.isSuspected,
-            },
-            transactionDetails: transactionDetails,
-            travelDetails: travelDetails.length === 0 ? undefined : travelDetails,
-            contractedPersons: contractedPersonFields.length === 0 ? undefined : contractedPersonFields,
-          },
-        },
-      });
-    } else if (props.type === 'UPDATE') {
-      if (_.isEqual(basicDetails.address, personDetails.basic.permanentAddress)) {
-        Object.assign(basicDetails, basicDetails, { addressChanged: 'N' });
-      } else {
-        Object.assign(basicDetails, basicDetails, { addressChanged: 'Y' });
+    } else {
+      if (transactionDetails.currentAddressSame === 'Y' && props.type === 'UPDATE') {
+        transactionDetails.currentAddress = basicDetails.address;
+        transactionDetails.currentAddressChanged = transactionDetails.currentAddressSame;
+        transactionDetails.currentAddressSame = undefined;
       }
-      dispatch({
-        type: 'UPDATE_CONTRACTED_PERSONS',
-        payload: {
-          patientId: props.rowData.person_identifier,
-          contractedDetails: {
-            basicDetails: basicDetails,
-            callDetails: {
-              phoneNumber: callDetails.phoneNumber,
-              answeredBy: callDetails.answeredBy,
-              isSuspected: callDetails.isSuspected,
-              callSuccessfulIndicator: callDetails.callSuccessFulIndicator,
-              wrongNumberIndicator: callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'wrongNumber' ? 'Y' : 'N') : 'N',
-              callNotRespondingIndicator:
-                callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'callNotPicked' ? 'Y' : 'N') : 'N',
-              incorrectPhoneNumber:
-                callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'incorrectPhoneNumber' ? 'Y' : 'N') : 'N',
-              inboundOrOutbound: 'outgoing',
+      if (transactionDetails.currentAddressSame === 'Y' && props.type === 'ADD') {
+        transactionDetails.currentAddress = basicDetails.address;
+      }
+      if (contractedPersonFields.length !== 0) {
+        contractedPersonFields.forEach((contractedPersons) => {
+          if (contractedPersons.isAddressAvailable !== 'Y') contractedPersons.address = undefined;
+        });
+      }
+      if (props.type === 'ADD') {
+        dispatch({
+          type: 'ADD_CONTRACTED_PERSONS',
+          payload: {
+            contractedDetails: {
+              basicDetails: basicDetails,
+              callDetails: {
+                phoneNumber: callDetails.phoneNumber,
+                answeredBy: callDetails.answeredBy,
+                isSuspected: callDetails.isSuspected,
+              },
+              transactionDetails: transactionDetails,
+              travelDetails: travelDetails.length === 0 ? undefined : travelDetails,
+              contractedPersons: contractedPersonFields.length === 0 ? undefined : contractedPersonFields,
             },
-            transactionDetails: transactionDetails,
           },
-        },
-      });
+        });
+      } else if (props.type === 'UPDATE') {
+        if (_.isEqual(basicDetails.address, personDetails.basic.permanentAddress)) {
+          Object.assign(basicDetails, basicDetails, { addressChanged: 'N' });
+        } else {
+          Object.assign(basicDetails, basicDetails, { addressChanged: 'Y' });
+        }
+        dispatch({
+          type: 'UPDATE_CONTRACTED_PERSONS',
+          payload: {
+            patientId: props.rowData.person_identifier,
+            contractedDetails: {
+              basicDetails: basicDetails,
+              callDetails: {
+                phoneNumber: callDetails.phoneNumber,
+                answeredBy: callDetails.answeredBy,
+                isSuspected: callDetails.isSuspected,
+                callSuccessfulIndicator: callDetails.callSuccessFulIndicator,
+                wrongNumberIndicator:
+                  callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'wrongNumber' ? 'Y' : 'N') : 'N',
+                callNotRespondingIndicator:
+                  callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'callNotPicked' ? 'Y' : 'N') : 'N',
+                incorrectPhoneNumber:
+                  callDetails.callSuccessFulIndicator !== 'Y' ? (callDetails.callFailureReason === 'incorrectPhoneNumber' ? 'Y' : 'N') : 'N',
+                inboundOrOutbound: 'outgoing',
+              },
+              transactionDetails: transactionDetails,
+            },
+          },
+        });
+      }
     }
-  }};
+  };
 
   const handleToastClose = () => {
     dispatch({
