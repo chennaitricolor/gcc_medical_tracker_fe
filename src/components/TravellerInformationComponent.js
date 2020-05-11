@@ -256,11 +256,13 @@ function renderTextFieldForAddress(
   source = null,
   sourceKey = null,
 ) {
+  const maxLengthProp = key === 'pinCode' ? { maxLength: 6 } : {};
   return (
     <TextField
       className={'traveller-information-' + key + ' ' + styles.textField}
       label={label}
       id={key}
+      inputProps={maxLengthProp}
       value={jsonPath({
         flatten: true,
         json: source !== null ? source : basicDetails,
@@ -277,11 +279,15 @@ function renderTextFieldForAddress(
 }
 
 function renderTextField(label, key, travellerInformation, handleOnChange, styles, multilineRequired = false, idx = null) {
+  const typeOfInput = ['age', 'pinCode', 'familyMembersCount'].includes(key) ? 'number' : 'text';
+  const maxLengthProp = ['familyMembersCount', 'age'].includes(key) ? { maxLength: 3 } : {};
   return (
     <TextField
       className={'traveller-information-' + key + ' ' + styles.textField}
       label={label}
       id={key}
+      type={typeOfInput}
+      inputProps={maxLengthProp}
       value={jsonPath({
         flatten: true,
         json: travellerInformation,
@@ -298,6 +304,7 @@ function renderTextField(label, key, travellerInformation, handleOnChange, style
 }
 
 function renderPhoneNumberField(label, key, travellerInformation, handleOnChange, styles, idx = null) {
+  //const isRequired = (key === 'secondaryPhoneNumber' || key === 'alternatePhoneNumber') ? false : true;
   return (
     <InputMask
       mask="9999999999"
@@ -1199,9 +1206,12 @@ const TravellerInformationComponent = (props) => {
               );
             })}
           </div>
+          <div style={{display: 'flex', flexDirection: 'row'}}>
           <Button variant="contained" style={{ width: '300px', marginTop: '2%' }} onClick={props.handleSave}>
             SUBMIT
           </Button>
+            {props.showError ?  <Typography style={{ paddingLeft: '35px', marginTop: '3%', color: 'red', fontWeight: 'bold', fontSize: '15px'}}>Please fill in all details to Submit</Typography> : ''}
+          </div>
         </DialogContent>
       </Dialog>
       {props.addContractedPersonError !== '' && props.addContractedPersonError !== undefined ? (
@@ -1242,6 +1252,7 @@ TravellerInformationComponent.propTypes = {
   handleAddressFieldsOnValueChange: PropTypes.func,
   addContractedPersonError: PropTypes.string,
   handleToastClose: PropTypes.func,
+  showError: PropTypes.bool
 };
 
 export default TravellerInformationComponent;

@@ -19,6 +19,7 @@ const TravellerInformationContainer = (props) => {
 
   const personDetails = useSelector((state) => state.getPersonsDetailReducer.personDetails);
   const isLoading = useSelector((state) => state.getPersonsDetailReducer.isLoading);
+  const [showError, setShowError] = useState(false);
 
   const [basicDetails, setBasicDetails] = useReducer((state, newState) => ({ ...state, ...newState }), {
     name: '',
@@ -217,6 +218,7 @@ const TravellerInformationContainer = (props) => {
   }, [personDetails]);
 
   const handleOnChangeForBasicDetails = (event, id, type, idx, dateFormat) => {
+    setShowError(false);
     if (idx !== null) {
       handleChangeForContractedPersonsDynamicFields(event, id, type, idx);
     } else {
@@ -275,6 +277,7 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleOnChangeForCallDetails = (event, id, type, idx, dateFormat) => {
+    setShowError(false);
     if (idx !== null) {
       handleChangeForContractedPersonsDynamicFields(event, id, type, idx);
     } else {
@@ -333,6 +336,7 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleOnChangeForTransactionDetails = (event, id, type, idx, dateFormat) => {
+    setShowError(false);
     if (idx !== null) {
       handleChangeForContractedPersonsDynamicFields(event, id, type, idx);
     } else {
@@ -369,7 +373,8 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleAddressFieldInput = (event, id, type, i) => {
-    if (event.length > 0 && event.length % 5 === 0) {
+    setShowError(false);
+    if (event.length > 0 && event.length % 3 === 0) {
       dispatch({
         type: getLocationsByType.GET_LOCATIONS_BY_TYPE,
         payload: {
@@ -383,6 +388,7 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleAddressFieldValuesOnChange = (event, id, type, i, calledBy) => {
+    setShowError(false);
     if (type === 'text') {
       if (event.target.value !== '') {
         if (calledBy === 'Basic Details') {
@@ -523,6 +529,7 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleChangeForTravelDetailsDynamicFields = (event, id, type, i, dateFormat) => {
+    setShowError(false);
     let temp = [];
     temp = temp.concat(...travelDetails);
 
@@ -560,6 +567,7 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleChangeForContractedPersonsDynamicFields = (event, id, type, i) => {
+    setShowError(false);
     let temp = [];
     temp = temp.concat(...contractedPersonFields);
 
@@ -591,18 +599,21 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleRemoveForTravelFields = (i) => {
+    setShowError(false);
     const values = [...travelDetails];
     values.splice(i, 1);
     setTravelDetails(values);
   };
 
   const handleRemoveForContractedFields = (i) => {
+    setShowError(false);
     const values = [...contractedPersonFields];
     values.splice(i, 1);
     setContractedPersonFields(values);
   };
 
   const handleAddForTravelDetails = () => {
+    setShowError(false);
     const values = [...travelDetails];
     values.push({
       placeOfVisit: '',
@@ -624,6 +635,7 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleAddForContractedFields = () => {
+    setShowError(false);
     const values = [...contractedPersonFields];
     values.push({
       name: '',
@@ -635,7 +647,45 @@ const TravellerInformationContainer = (props) => {
     setContractedPersonFields(values);
   };
 
+  const isInvalidBasicDetails = () => {
+    const address = basicDetails.address;
+
+    const isBasicDetailsInvalid = Object.keys(basicDetails).some(key => {
+      return !['passport', 'secondaryPhoneNumber', 'otherIllness', 'remarks', 'address', 'countryVisited', 'dateOfArraival'].includes(key) && (basicDetails[key] === '' || basicDetails[key] === undefined);
+    });
+
+     const isTravelledAbroadInvalid = (basicDetails['travelledAbroad'] === 'Y' && ((basicDetails['countryVisited'] === undefined || basicDetails['countryVisited'] === '') ||
+         (basicDetails['dateOfArraival'] === undefined || basicDetails['dateOfArraival'] === '')));
+
+     const isAddressInvalid = Object.values(address).some(value => (value === '' || value === undefined));
+    return isBasicDetailsInvalid || isAddressInvalid || isTravelledAbroadInvalid;
+  }
+
+  const isInvalidCallDetails = () => {
+    const isCallDetailsParentInvalid = Object.keys(callDetails).some(key => {
+      return !['answeredBy', 'callType', 'callFailureReason'].includes((key)) && (callDetails[key] === '' || callDetails[key] === undefined);
+    });
+    const isCallDetailsChildInvalid = (callDetails['callSuccessFulIndicator'] !== undefined && callDetails['callSuccessFulIndicator'] === 'N') && (callDetails['callFailureReason'] === '' || callDetails['callFailureReason'] === undefined);
+    return isCallDetailsChildInvalid || isCallDetailsParentInvalid;
+
+  }
+
+  const isInvalidTransactionDetails = () => {
+    const address = transactionDetails.address;
+    const isTransactionFieldsInvalid = Object.keys(transactionDetails).some(key => {
+      return !['symptoms', 'dateOfFirstSymptom', 'currentAddress'].includes(key) && (transactionDetails[key] === '' || transactionDetails[key] === undefined);
+    });
+    const isAddressInvalid = (transactionDetails['currentAddressSame'] !== undefined && transactionDetails['currentAddressSame'] === 'N') && (Object.values(address).some(value => (value === '' || value === undefined)));
+    return isAddressInvalid || isTransactionFieldsInvalid;
+  }
+
+
   const handleSave = () => {
+
+    if(isInvalidBasicDetails() || isInvalidCallDetails() || isInvalidTransactionDetails()) {
+      setShowError(true);
+    }
+    else {
     if (transactionDetails.currentAddressSame === 'Y' && props.type === 'UPDATE') {
       transactionDetails.currentAddress = basicDetails.address;
       transactionDetails.currentAddressChanged = transactionDetails.currentAddressSame;
@@ -686,7 +736,7 @@ const TravellerInformationContainer = (props) => {
         },
       });
     }
-  };
+  }};
 
   const handleToastClose = () => {
     dispatch({
@@ -788,6 +838,7 @@ const TravellerInformationContainer = (props) => {
               locationDetails={locationsList.locationsByType}
               addContractedPersonError={addContractedPersonResponse.addContractedPersonError}
               handleToastClose={handleToastClose}
+              showError={showError}
             />
           )}
         </MuiPickersUtilsProvider>
