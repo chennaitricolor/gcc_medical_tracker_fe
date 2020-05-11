@@ -154,6 +154,9 @@ const useStyles = makeStyles(() => ({
     '.traveller-information-otherNotes': {
       width: '75%',
     },
+    '.traveller-information-isAddressAvailable': {
+      display: 'inline-block',
+    },
   },
 }));
 
@@ -334,7 +337,7 @@ function renderDropDownFieldForAsyncAPICall(
   idx = null,
   calledBy,
   source = null,
-  sourceKey = null
+  sourceKey = null,
 ) {
   let dropDownValues = dropdownList !== undefined ? dropdownList : [];
   if (key === 'street_name') {
@@ -729,7 +732,7 @@ const TravellerInformationComponent = (props) => {
                 null,
                 'Basic Details',
                 props.basicDetails.address,
-                'numberAndFloor'
+                'numberAndFloor',
               )}
               {renderDropDownFieldForAsyncAPICall(
                 'Street',
@@ -769,7 +772,7 @@ const TravellerInformationComponent = (props) => {
                 null,
                 'Basic Details',
                 props.basicDetails.address,
-                'city'
+                'city',
               )}
               <div style={{ marginTop: '2%' }}>
                 {renderTextFieldForAddress(
@@ -782,7 +785,7 @@ const TravellerInformationComponent = (props) => {
                   null,
                   'Basic Details',
                   props.basicDetails.address,
-                  'state'
+                  'state',
                 )}
                 {renderTextFieldForAddress(
                   'Pin Code',
@@ -794,7 +797,7 @@ const TravellerInformationComponent = (props) => {
                   null,
                   'Basic Details',
                   props.basicDetails.address,
-                  'pinCode'
+                  'pinCode',
                 )}
               </div>
             </div>
@@ -947,7 +950,7 @@ const TravellerInformationComponent = (props) => {
                     null,
                     'Transaction Details',
                     props.transactionDetails.currentAddress,
-                    'city'
+                    'city',
                   )}
                   <div style={{ marginTop: '2%' }}>
                     {renderTextFieldForAddress(
@@ -960,7 +963,7 @@ const TravellerInformationComponent = (props) => {
                       null,
                       'Transaction Details',
                       props.transactionDetails.currentAddress,
-                      'state'
+                      'state',
                     )}
                     {renderTextFieldForAddress(
                       'Pin Code',
@@ -972,7 +975,7 @@ const TravellerInformationComponent = (props) => {
                       null,
                       'Transaction Details',
                       props.transactionDetails.currentAddress,
-                      'pinCode'
+                      'pinCode',
                     )}
                   </div>
                 </div>
@@ -1066,7 +1069,7 @@ const TravellerInformationComponent = (props) => {
                           idx,
                           'Travel Details',
                           field.address,
-                          'numberAndFloor'
+                          'numberAndFloor',
                         )}
                         {renderDropDownFieldForAsyncAPICall(
                           'Street',
@@ -1106,7 +1109,7 @@ const TravellerInformationComponent = (props) => {
                           idx,
                           'Travel Details',
                           field.address,
-                          'city'
+                          'city',
                         )}
                         <div style={{ marginTop: '2%' }}>
                           {renderTextFieldForAddress(
@@ -1119,7 +1122,7 @@ const TravellerInformationComponent = (props) => {
                             idx,
                             'Travel Details',
                             field.address,
-                            'state'
+                            'state',
                           )}
                           {renderTextFieldForAddress(
                             'Pin Code',
@@ -1131,7 +1134,7 @@ const TravellerInformationComponent = (props) => {
                             idx,
                             'Travel Details',
                             field.address,
-                            'pinCode'
+                            'pinCode',
                           )}
                         </div>
                       </div>
@@ -1201,7 +1204,117 @@ const TravellerInformationComponent = (props) => {
                       styles,
                       idx,
                     )}
+                    {renderRadioButtonField(
+                      'Do you know the Address?',
+                      'isAddressAvailable',
+                      yesNoRadioButton,
+                      field,
+                      props.handleChangeForContractedPersonsDynamicFields,
+                      styles,
+                      idx,
+                    )}
                   </div>
+                  {field.isAddressAvailable === 'Y' ? (
+                    <div style={{ marginTop: '2%' }} className={styles.subHeading}>
+                      Address
+                      <Divider className={styles.informationDivider} />
+                      <div style={{ marginTop: '2%' }}>
+                        {renderDropDownFieldForAddress(
+                          'Type of Address',
+                          'type',
+                          typeOfAddress,
+                          field,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          matchStyleForDropdown,
+                          idx,
+                          'Contracted Details',
+                          field.address,
+                          'type',
+                        )}
+                        {renderTextFieldForAddress(
+                          'Flat/Home Number and Floor',
+                          'numberAndFloor',
+                          field,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          false,
+                          idx,
+                          'Contracted Details',
+                          field.address,
+                          'numberAndFloor',
+                        )}
+                        {renderDropDownFieldForAsyncAPICall(
+                          'Street',
+                          'street_name',
+                          props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                          field,
+                          props.handleAddressFieldChanges,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          matchStyleForDropdown,
+                          idx,
+                          'Contracted Details',
+                          field.address,
+                          'street',
+                        )}
+                        {renderDropDownFieldForAsyncAPICall(
+                          'Area',
+                          'area',
+                          props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                          field,
+                          props.handleAddressFieldChanges,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          matchStyleForDropdown,
+                          idx,
+                          'Contracted Details',
+                          field.address,
+                          'area',
+                        )}
+                        {renderTextFieldForAddress(
+                          'City',
+                          'city',
+                          field,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          false,
+                          idx,
+                          'Contracted Details',
+                          field.address,
+                          'city',
+                        )}
+                        <div style={{ marginTop: '2%' }}>
+                          {renderTextFieldForAddress(
+                            'State',
+                            'state',
+                            field,
+                            props.handleAddressFieldsOnValueChange,
+                            styles,
+                            false,
+                            idx,
+                            'Contracted Details',
+                            field.address,
+                            'state',
+                          )}
+                          {renderTextFieldForAddress(
+                            'Pin Code',
+                            'pinCode',
+                            field,
+                            props.handleAddressFieldsOnValueChange,
+                            styles,
+                            false,
+                            idx,
+                            'Contracted Details',
+                            field.address,
+                            'pinCode',
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ''
+                  )}
                 </div>
               );
             })}
@@ -1216,7 +1329,7 @@ const TravellerInformationComponent = (props) => {
       </Dialog>
       {props.addContractedPersonError !== '' && props.addContractedPersonError !== undefined ? (
         <ToastComponent
-          toastMessage={'Error while saving data. Please try later...'}
+          toastMessage={props.addContractedPersonError}
           openToast={props.addContractedPersonError !== ''}
           handleClose={props.handleToastClose}
           toastVariant={'error'}

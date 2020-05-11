@@ -13,7 +13,6 @@ import _ from 'lodash';
 
 const TravellerInformationContainer = (props) => {
   const dispatch = useDispatch();
-
   const locationsList = useSelector((state) => state.getLocationsByTypeReducer);
   const addContractedPersonResponse = useSelector((state) => state.contractedPersonReducer);
 
@@ -131,6 +130,8 @@ const TravellerInformationContainer = (props) => {
           symptoms: undefined,
           dateOfFirstSymptom: undefined,
         });
+        setTravelDetails([]);
+        setContractedPersonFields([]);
       };
     }
   }, [props.showDialog]);
@@ -212,7 +213,10 @@ const TravellerInformationContainer = (props) => {
             });
           });
           setTravelDetails(values);
+        } else {
+          setTravelDetails([]);
         }
+        setContractedPersonFields([]);
       }
     }
   }, [personDetails]);
@@ -420,6 +424,21 @@ const TravellerInformationContainer = (props) => {
               [event.target.id]: event.target.value,
             },
           });
+        } else if (calledBy === 'Contracted Details') {
+          let temp = [];
+          temp = temp.concat(...contractedPersonFields);
+          temp.forEach((a, index) => {
+            if (index === i) {
+              temp.splice(i, 1, {
+                ...a,
+                address: {
+                  ...a.address,
+                  [event.target.id]: event.target.value,
+                },
+              });
+            }
+          });
+          setContractedPersonFields(temp);
         }
       } else {
         if (calledBy === 'Basic Details') {
@@ -451,6 +470,21 @@ const TravellerInformationContainer = (props) => {
               [event.target.id]: event.target.value,
             },
           });
+        } else if (calledBy === 'Contracted Details') {
+          let temp = [];
+          temp = temp.concat(...contractedPersonFields);
+          temp.forEach((a, index) => {
+            if (index === i) {
+              temp.splice(i, 1, {
+                ...a,
+                address: {
+                  ...a.address,
+                  [event.target.id]: undefined,
+                },
+              });
+            }
+          });
+          setContractedPersonFields(temp);
         }
       }
     }
@@ -497,6 +531,22 @@ const TravellerInformationContainer = (props) => {
               locationId: selectedArea,
             },
           });
+        } else if (calledBy === 'Contracted Details') {
+          let temp = [];
+          temp = temp.concat(...contractedPersonFields);
+          temp.forEach((a, index) => {
+            if (index === i) {
+              temp.splice(i, 1, {
+                ...a,
+                address: {
+                  ...a.address,
+                  [idValue]: event,
+                  locationId: selectedArea,
+                },
+              });
+            }
+          });
+          setContractedPersonFields(temp);
         }
       } else {
         const idValue = id === 'street_name' ? 'street' : id;
@@ -523,6 +573,15 @@ const TravellerInformationContainer = (props) => {
               [idValue]: '',
             },
           });
+        } else if (calledBy === 'Contracted Details') {
+          let temp = [];
+          temp = temp.concat(...contractedPersonFields);
+          temp.forEach((a, index) => {
+            if (index === i) {
+              temp.splice(i, 1, { ...a, [idValue]: '' });
+            }
+          });
+          setContractedPersonFields(temp);
         }
       }
     }
@@ -585,9 +644,9 @@ const TravellerInformationContainer = (props) => {
           }
         }
 
-        if (type === 'radio') {
+        if (type === 'radioButton') {
           if (event !== null) {
-            temp.splice(i, 1, { ...a, [id]: event.target.value === 'yes' });
+            temp.splice(i, 1, { ...a, [id]: event.target.value });
           } else {
             temp.splice(i, 1, { ...a, [id]: false });
           }
@@ -643,6 +702,8 @@ const TravellerInformationContainer = (props) => {
       gender: '',
       phoneNumber: '',
       alternatePhoneNumber: undefined,
+      isAddressAvailable: '',
+      address: undefined,
     });
     setContractedPersonFields(values);
   };
@@ -691,6 +752,14 @@ const TravellerInformationContainer = (props) => {
       transactionDetails.currentAddressChanged = transactionDetails.currentAddressSame;
       transactionDetails.currentAddressSame = undefined;
     }
+    if (transactionDetails.currentAddressSame === 'Y' && props.type === 'ADD') {
+      transactionDetails.currentAddress = basicDetails.address;
+    }
+    if (contractedPersonFields.length !== 0) {
+      contractedPersonFields.forEach((contractedPersons) => {
+        if (contractedPersons.isAddressAvailable !== 'Y') contractedPersons.address = undefined;
+      });
+    }
     if (props.type === 'ADD') {
       dispatch({
         type: 'ADD_CONTRACTED_PERSONS',
@@ -717,6 +786,7 @@ const TravellerInformationContainer = (props) => {
       dispatch({
         type: 'UPDATE_CONTRACTED_PERSONS',
         payload: {
+          patientId: props.rowData.person_identifier,
           contractedDetails: {
             basicDetails: basicDetails,
             callDetails: {
@@ -794,6 +864,8 @@ const TravellerInformationContainer = (props) => {
         symptoms: undefined,
         dateOfFirstSymptom: undefined,
       });
+      setTravelDetails([]);
+      setContractedPersonFields([]);
     }
   };
 
