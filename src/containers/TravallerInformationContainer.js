@@ -129,6 +129,8 @@ const TravellerInformationContainer = (props) => {
           symptoms: undefined,
           dateOfFirstSymptom: undefined,
         });
+        setTravelDetails([]);
+        setContractedPersonFields([]);
       };
     }
   }, [props.showDialog]);
@@ -210,7 +212,10 @@ const TravellerInformationContainer = (props) => {
             });
           });
           setTravelDetails(values);
+        } else {
+          setTravelDetails([]);
         }
+        setContractedPersonFields([]);
       }
     }
   }, [personDetails]);
@@ -809,6 +814,8 @@ const TravellerInformationContainer = (props) => {
         symptoms: undefined,
         dateOfFirstSymptom: undefined,
       });
+      setTravelDetails([]);
+      setContractedPersonFields([]);
     }
   };
 
