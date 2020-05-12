@@ -345,6 +345,7 @@ function renderDropDownFieldForAsyncAPICall(
   } else if (key === 'area') {
     dropDownValues = dropDownValues.map((dropDownValue) => dropDownValue['area']);
   }
+  dropDownValues = [...new Set(dropDownValues)];
   return (
     <Autocomplete
       className={'traveller-information-' + key + ' ' + styles.label}
