@@ -33,7 +33,7 @@ const DashboardContainer = (props) => {
     setSelectedZone(event.target.value);
     const allZones =
       getAllZones !== undefined && getAllZones.allZones !== undefined && getAllZones.allZones.success ? getAllZones.allZones.zones : [];
-    const wardsBasedOnZoneNumber = allZones.find((zoneItem) => zoneItem.zone === parseInt(zoneNumber));
+    const wardsBasedOnZoneNumber = allZones.find((zoneItem) => zoneItem.zone === zoneNumber);
     const wards = wardsBasedOnZoneNumber !== undefined ? wardsBasedOnZoneNumber.ward.split(',') : [];
     setWards(wards);
   };

@@ -283,27 +283,62 @@ function renderTextFieldForAddress(
 
 function renderTextField(label, key, travellerInformation, handleOnChange, styles, multilineRequired = false, idx = null) {
   const typeOfInput = ['age', 'pinCode', 'familyMembersCount'].includes(key) ? 'number' : 'text';
-  const maxLengthProp = ['familyMembersCount', 'age'].includes(key) ? { maxLength: 3 } : {};
-  return (
-    <TextField
-      className={'traveller-information-' + key + ' ' + styles.textField}
-      label={label}
-      id={key}
-      type={typeOfInput}
-      inputProps={maxLengthProp}
-      value={jsonPath({
-        flatten: true,
-        json: travellerInformation,
-        path: key,
-        wrap: false,
-      })}
-      multiline={multilineRequired}
-      onChange={(event) => handleOnChange(event, key, 'text', idx)}
-      autoComplete="off"
-      margin={'normal'}
-      variant={'outlined'}
-    />
-  );
+  const maxLengthProp = ['passport'].includes(key) ? { maxLength: 8 } : {};
+
+  if (['age'].includes(key)) {
+    return (
+      <InputMask
+        mask="999"
+        maskChar={null}
+        value={jsonPath({
+          flatten: true,
+          json: travellerInformation,
+          path: key,
+          wrap: false,
+        })}
+        onChange={(value) => handleOnChange(value, key, 'text', idx)}
+      >
+        {() => <TextField id={key} variant={'outlined'} className={'traveller-information-' + key + ' ' + styles.textField} label={label} />}
+      </InputMask>
+    );
+  } else if (['familyMembersCount'].includes(key)) {
+    return (
+      <InputMask
+        mask="99"
+        maskChar={null}
+        value={jsonPath({
+          flatten: true,
+          json: travellerInformation,
+          path: key,
+          wrap: false,
+        })}
+        onChange={(value) => handleOnChange(value, key, 'text', idx)}
+      >
+        {() => <TextField id={key} variant={'outlined'} className={'traveller-information-' + key + ' ' + styles.textField} label={label} />}
+      </InputMask>
+    );
+  } else {
+    return (
+      <TextField
+        className={'traveller-information-' + key + ' ' + styles.textField}
+        label={label}
+        id={key}
+        type={typeOfInput}
+        inputProps={maxLengthProp}
+        value={jsonPath({
+          flatten: true,
+          json: travellerInformation,
+          path: key,
+          wrap: false,
+        })}
+        multiline={multilineRequired}
+        onChange={(event) => handleOnChange(event, key, 'text', idx)}
+        autoComplete="off"
+        margin={'normal'}
+        variant={'outlined'}
+      />
+    );
+  }
 }
 
 function renderPhoneNumberField(label, key, travellerInformation, handleOnChange, styles, idx = null) {
@@ -1320,11 +1355,17 @@ const TravellerInformationComponent = (props) => {
               );
             })}
           </div>
-          <div style={{display: 'flex', flexDirection: 'row'}}>
-          <Button variant="contained" style={{ width: '300px', marginTop: '2%' }} onClick={props.handleSave}>
-            SUBMIT
-          </Button>
-            {props.showError ?  <Typography style={{ paddingLeft: '35px', marginTop: '3%', color: 'red', fontWeight: 'bold', fontSize: '15px'}}>Please fill in all details to Submit</Typography> : ''}
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <Button variant="contained" style={{ width: '300px', marginTop: '2%' }} onClick={props.handleSave}>
+              SUBMIT
+            </Button>
+            {props.showError ? (
+              <Typography style={{ paddingLeft: '35px', marginTop: '3%', color: 'red', fontWeight: 'bold', fontSize: '15px' }}>
+                Please fill in all details to Submit
+              </Typography>
+            ) : (
+              ''
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -1366,7 +1407,7 @@ TravellerInformationComponent.propTypes = {
   handleAddressFieldsOnValueChange: PropTypes.func,
   addContractedPersonError: PropTypes.string,
   handleToastClose: PropTypes.func,
-  showError: PropTypes.bool
+  showError: PropTypes.bool,
 };
 
 export default TravellerInformationComponent;

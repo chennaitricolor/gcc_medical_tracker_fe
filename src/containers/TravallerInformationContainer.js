@@ -500,52 +500,98 @@ const TravellerInformationContainer = (props) => {
             : [];
         const selectedArea = selectedAreaList.length > 0 ? selectedAreaList[0] : '';
         if (calledBy === 'Basic Details') {
-          setBasicDetails({
-            address: {
-              ...basicDetails.address,
-              [idValue]: event,
-              locationId: selectedArea,
-            },
-          });
+          if (id === 'area') {
+            setBasicDetails({
+              address: {
+                ...basicDetails.address,
+                [idValue]: event,
+                locationId: selectedArea,
+              },
+            });
+          } else {
+            setBasicDetails({
+              address: {
+                ...basicDetails.address,
+                [idValue]: event,
+              },
+            });
+          }
         } else if (calledBy === 'Travel Details') {
           let temp = [];
           temp = temp.concat(...travelDetails);
-          temp.forEach((a, index) => {
-            if (index === i) {
-              temp.splice(i, 1, {
-                ...a,
-                address: {
-                  ...a.address,
-                  [idValue]: event,
-                  locationId: selectedArea,
-                },
-              });
-            }
-          });
+          if (id === 'area') {
+            temp.forEach((a, index) => {
+              if (index === i) {
+                temp.splice(i, 1, {
+                  ...a,
+                  address: {
+                    ...a.address,
+                    [idValue]: event,
+                    locationId: selectedArea,
+                  },
+                });
+              }
+            });
+          } else {
+            temp.forEach((a, index) => {
+              if (index === i) {
+                temp.splice(i, 1, {
+                  ...a,
+                  address: {
+                    ...a.address,
+                    [idValue]: event,
+                  },
+                });
+              }
+            });
+          }
           setTravelDetails(temp);
         } else if (calledBy === 'Transaction Details') {
-          setTransactionDetails({
-            currentAddress: {
-              ...transactionDetails.currentAddress,
-              [idValue]: event,
-              locationId: selectedArea,
-            },
-          });
+          if (id === "area") {
+            setTransactionDetails({
+              currentAddress: {
+                ...transactionDetails.currentAddress,
+                [idValue]: event,
+                locationId: selectedArea,
+              },
+            });
+          } else {
+            setTransactionDetails({
+              currentAddress: {
+                ...transactionDetails.currentAddress,
+                [idValue]: event,
+              },
+            });
+          }
         } else if (calledBy === 'Contracted Details') {
           let temp = [];
           temp = temp.concat(...contractedPersonFields);
-          temp.forEach((a, index) => {
-            if (index === i) {
-              temp.splice(i, 1, {
-                ...a,
-                address: {
-                  ...a.address,
-                  [idValue]: event,
-                  locationId: selectedArea,
-                },
-              });
-            }
-          });
+          if (id === "area") {
+            temp.forEach((a, index) => {
+              if (index === i) {
+                temp.splice(i, 1, {
+                  ...a,
+                  address: {
+                    ...a.address,
+                    [idValue]: event,
+                    locationId: selectedArea,
+                  },
+                });
+              }
+            });
+          } else {
+            temp.forEach((a, index) => {
+              if (index === i) {
+                temp.splice(i, 1, {
+                  ...a,
+                  address: {
+                    ...a.address,
+                    [idValue]: event,
+                  },
+                });
+              }
+            });
+          }
           setContractedPersonFields(temp);
         }
       } else {
@@ -741,7 +787,7 @@ const TravellerInformationContainer = (props) => {
   };
 
   const isInvalidTransactionDetails = () => {
-    const address = transactionDetails.address;
+    const address = transactionDetails.currentAddress;
     const isTransactionFieldsInvalid = Object.keys(transactionDetails).some((key) => {
       return (
         !['symptoms', 'dateOfFirstSymptom', 'currentAddress'].includes(key) &&
@@ -751,7 +797,14 @@ const TravellerInformationContainer = (props) => {
     const isAddressInvalid =
       transactionDetails['currentAddressSame'] !== undefined &&
       transactionDetails['currentAddressSame'] === 'N' &&
-      Object.values(address).some((value) => value === '' || value === undefined);
+      (address === undefined ||
+        address.type === undefined ||
+        address.numberAndFloor === undefined ||
+        address.street === undefined ||
+        address.area === undefined ||
+        address.city === undefined ||
+        address.state === undefined ||
+        address.pinCode === undefined);
     return isAddressInvalid || isTransactionFieldsInvalid;
   };
 
