@@ -1234,7 +1234,7 @@ const TravellerInformationComponent = (props) => {
                     )}
                     {renderPhoneNumberField(
                       'Alternate Phone Number',
-                      'alternatePhoneNumber',
+                      'secondaryPhoneNumber',
                       field,
                       props.handleChangeForContractedPersonsDynamicFields,
                       styles,

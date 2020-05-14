@@ -747,7 +747,7 @@ const TravellerInformationContainer = (props) => {
       age: '',
       gender: '',
       phoneNumber: '',
-      alternatePhoneNumber: undefined,
+      secondaryPhoneNumber: undefined,
       isAddressAvailable: '',
       address: undefined,
     });
@@ -833,7 +833,7 @@ const TravellerInformationContainer = (props) => {
         const address = persons.address;
 
         contractedPersonsInvalid = Object.keys(persons).some(
-          (key) => !['alternatePhoneNumber', 'address'].includes(key) && (persons[key] === '' || persons[key] === undefined),
+          (key) => !['secondaryPhoneNumber', 'address'].includes(key) && (persons[key] === '' || persons[key] === undefined),
         );
 
         isAddressInvalid =
