@@ -198,7 +198,7 @@ const TravellerInformationContainer = (props) => {
             values.push({
               placeOfVisit: travel.place_of_visit,
               placeType: travel.place_type,
-              visitedDate: formatDateBasedOnFormat(travel.date_and_time_of_travel, 'MM-DD-YYYY'),
+              visitedDate: formatDateBasedOnFormat(travel.date_and_time_of_travel, 'MM-DD-YYYY HH:mm'),
               modeOfTravel: travel.mode_of_travel,
               address: {
                 type: travel.address.buildingType,
