@@ -918,6 +918,8 @@ const TravellerInformationContainer = (props) => {
                 inboundOrOutbound: 'outgoing',
               },
               transactionDetails: transactionDetails,
+              travelDetails: travelDetails.length === 0 ? undefined : travelDetails,
+              contractedPersons: contractedPersonFields.length === 0 ? undefined : contractedPersonFields,
             },
           },
         });
