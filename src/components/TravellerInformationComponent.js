@@ -18,7 +18,7 @@ import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import InputMask from 'react-input-mask';
 import ToastComponent from './ToastComponent';
-import { formatDateBasedOnFormat } from '../utils/GeneralUtils';
+import { formatDateBasedOnFormat, formatDateFromOneFormatToOther } from '../utils/GeneralUtils';
 
 const useStyles = makeStyles(() => ({
   heading: {
@@ -532,24 +532,20 @@ function renderDateField(label, key, dateFormat, type, campaignDetails, handleOn
         key={'create-campaign-' + key + '-mui-pickers-key'}
         id={'create-campaign-' + key + '-mui-pickers'}
         label={label}
-        value={
+        value={formatDateFromOneFormatToOther(
           jsonPath({
             flatten: true,
             json: campaignDetails,
             path: key,
             wrap: false,
-          }) !== undefined
-            ? jsonPath({
-                flatten: true,
-                json: campaignDetails,
-                path: key,
-                wrap: false,
-              })
-            : null
-        }
+          }),
+          dateFormat,
+          'MM/DD/YYYY',
+        )}
         onChange={(date) => handleOnChange(date, key, 'date', idx, dateFormat)}
-        placeholder="MM/DD/YYYY"
-        format={dateFormat}
+        placeholder={'MM/DD/YYYY'}
+        format={'MM/DD/YYYY'}
+        disableFuture
         inputVariant="outlined"
         clearable
       />
@@ -561,24 +557,20 @@ function renderDateField(label, key, dateFormat, type, campaignDetails, handleOn
         key={'create-campaign-' + key + '-mui-pickers-key'}
         id={'create-campaign-' + key + '-mui-pickers'}
         label={label}
-        value={
+        value={formatDateFromOneFormatToOther(
           jsonPath({
             flatten: true,
             json: campaignDetails,
             path: key,
             wrap: false,
-          }) !== undefined
-            ? jsonPath({
-                flatten: true,
-                json: campaignDetails,
-                path: key,
-                wrap: false,
-              })
-            : null
-        }
+          }),
+          dateFormat,
+          'MM/DD/YYYY HH:mm',
+        )}
         onChange={(date) => handleOnChange(date, key, 'date', idx, dateFormat)}
-        placeholder="MM/DD/YYYY"
-        format={dateFormat}
+        placeholder="'MM/DD/YYYY HH:mm"
+        format={'MM/DD/YYYY HH:mm'}
+        disableFuture
         inputVariant="outlined"
         clearable
       />

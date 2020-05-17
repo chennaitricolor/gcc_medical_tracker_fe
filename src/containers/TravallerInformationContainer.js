@@ -156,7 +156,7 @@ const TravellerInformationContainer = (props) => {
             secondaryPhoneNumber: getValue(personDetails.basic.secondary_phone_number),
             travelledAbroad: getValue(personDetails.basic.travel_history_indicator),
             countryVisited: getValue(personDetails.basic.country_visited),
-            dateOfArraival: getValue(formatDateBasedOnFormat(personDetails.basic.date_of_arrival, 'MM-DD-YYYY')),
+            dateOfArraival: getValue(formatDateBasedOnFormat(personDetails.basic.date_of_arrival, 'DD-MM-YYYY')),
             remarks: getValue(personDetails.basic.remarks),
             familyMembersCount: getValue(personDetails.basic.number_of_family_members),
             diabetesIndicator: getValue(personDetails.basic.diabetes_indicator),
@@ -189,7 +189,7 @@ const TravellerInformationContainer = (props) => {
             },
             healthStatus: getValue(personDetails.lastCall.person_status),
             symptoms: getValue(personDetails.lastCall.symptoms),
-            dateOfFirstSymptom: getValue(formatDateBasedOnFormat(personDetails.lastCall.date_of_first_symptom, 'MM-DD-YYYY')),
+            dateOfFirstSymptom: getValue(formatDateBasedOnFormat(personDetails.lastCall.date_of_first_symptom, 'DD-MM-YYYY')),
           });
         }
         if (personDetails.travel !== null) {
@@ -198,7 +198,7 @@ const TravellerInformationContainer = (props) => {
             values.push({
               placeOfVisit: travel.place_of_visit,
               placeType: travel.place_type,
-              visitedDate: formatDateBasedOnFormat(travel.date_and_time_of_travel, 'MM-DD-YYYY HH:mm'),
+              visitedDate: formatDateBasedOnFormat(travel.date_and_time_of_travel, 'DD-MM-YYYY HH:mm'),
               modeOfTravel: travel.mode_of_travel,
               address: {
                 type: travel.address.buildingType,
