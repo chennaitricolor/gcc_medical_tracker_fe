@@ -173,20 +173,21 @@ const TravellerInformationContainer = (props) => {
               locationId: personDetails.basic.permanentAddress.locationId,
             },
           });
+          setTransactionDetails({
+            currentAddress: {
+              type: personDetails.basic.currentAddress.buildingType,
+              numberAndFloor: personDetails.basic.currentAddress.flatBuildingNoAndFloor,
+              street: personDetails.basic.currentAddress.street,
+              area: personDetails.basic.currentAddress.area,
+              city: personDetails.basic.currentAddress.city,
+              state: personDetails.basic.currentAddress.state,
+              pinCode: personDetails.basic.currentAddress.pinCode,
+              locationId: personDetails.basic.currentAddress.locationId,
+            },
+          });
         }
         if (personDetails.lastCall !== undefined && personDetails.lastCall !== null) {
           setTransactionDetails({
-            currentAddressSame: 'Y',
-            currentAddress: {
-              type: personDetails.lastCall.address.buildingType,
-              numberAndFloor: personDetails.lastCall.address.flatBuildingNoAndFloor,
-              street: personDetails.lastCall.address.street,
-              area: personDetails.lastCall.address.area,
-              city: personDetails.lastCall.address.city,
-              state: personDetails.lastCall.address.state,
-              pinCode: personDetails.lastCall.address.pinCode,
-              locationId: personDetails.lastCall.address.locationId,
-            },
             healthStatus: getValue(personDetails.lastCall.person_status),
             symptoms: getValue(personDetails.lastCall.symptoms),
             dateOfFirstSymptom: getValue(formatDateBasedOnFormat(personDetails.lastCall.date_of_first_symptom, 'DD-MM-YYYY')),
@@ -547,7 +548,7 @@ const TravellerInformationContainer = (props) => {
           }
           setTravelDetails(temp);
         } else if (calledBy === 'Transaction Details') {
-          if (id === "area") {
+          if (id === 'area') {
             setTransactionDetails({
               currentAddress: {
                 ...transactionDetails.currentAddress,
@@ -566,7 +567,7 @@ const TravellerInformationContainer = (props) => {
         } else if (calledBy === 'Contracted Details') {
           let temp = [];
           temp = temp.concat(...contractedPersonFields);
-          if (id === "area") {
+          if (id === 'area') {
             temp.forEach((a, index) => {
               if (index === i) {
                 temp.splice(i, 1, {
@@ -759,7 +760,7 @@ const TravellerInformationContainer = (props) => {
 
     const isBasicDetailsInvalid = Object.keys(basicDetails).some((key) => {
       return (
-        !['passport', 'secondaryPhoneNumber', 'otherIllness', 'remarks', 'address', 'countryVisited', 'dateOfArraival'].includes(key) &&
+        !['passport', 'secondaryPhoneNumber', 'otherIllness', 'remarks', 'address', 'countryVisited', 'dateOfArraival', 'addressChanged'].includes(key) &&
         (basicDetails[key] === '' || basicDetails[key] === undefined)
       );
     });
@@ -788,23 +789,38 @@ const TravellerInformationContainer = (props) => {
 
   const isInvalidTransactionDetails = () => {
     const address = transactionDetails.currentAddress;
+
     const isTransactionFieldsInvalid = Object.keys(transactionDetails).some((key) => {
       return (
-        !['symptoms', 'dateOfFirstSymptom', 'currentAddress'].includes(key) &&
+        !['symptoms', 'dateOfFirstSymptom', 'currentAddress', 'currentAddressSame', 'currentAddressChanged'].includes(key) &&
         (transactionDetails[key] === '' || transactionDetails[key] === undefined)
       );
     });
-    const isAddressInvalid =
-      transactionDetails['currentAddressSame'] !== undefined &&
-      transactionDetails['currentAddressSame'] === 'N' &&
-      (address === undefined ||
-        address.type === undefined ||
-        address.numberAndFloor === undefined ||
-        address.street === undefined ||
-        address.area === undefined ||
-        address.city === undefined ||
-        address.state === undefined ||
-        address.pinCode === undefined);
+
+    let isAddressInvalid;
+
+    console.log(props.type, address);
+    if (props.type === "ADD") {
+      isAddressInvalid =
+        transactionDetails['currentAddressSame'] !== undefined &&
+        transactionDetails['currentAddressSame'] === 'N' &&
+        (address === undefined ||
+          address.type === undefined ||
+          address.numberAndFloor === undefined ||
+          address.street === undefined ||
+          address.area === undefined ||
+          address.city === undefined ||
+          address.state === undefined ||
+          address.pinCode === undefined);
+    } else {
+      isAddressInvalid = address.type === '' ||
+        address.numberAndFloor === '' ||
+        address.street === '' ||
+        address.area === '' ||
+        address.city === '' ||
+        address.state === '' ||
+        address.pinCode === '';
+    }
     return isAddressInvalid || isTransactionFieldsInvalid;
   };
 
@@ -853,6 +869,7 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleSave = () => {
+    console.log(basicDetails, callDetails, transactionDetails);
     if (
       isInvalidBasicDetails() ||
       isInvalidCallDetails() ||
@@ -862,10 +879,12 @@ const TravellerInformationContainer = (props) => {
     ) {
       setShowError(true);
     } else {
-      if (transactionDetails.currentAddressSame === 'Y' && props.type === 'UPDATE') {
-        transactionDetails.currentAddress = basicDetails.address;
-        transactionDetails.currentAddressChanged = transactionDetails.currentAddressSame;
-        transactionDetails.currentAddressSame = undefined;
+      if (props.type === 'UPDATE') {
+        if (_.isEqual(transactionDetails.currentAddress, personDetails.basic.currentAddress)) {
+          transactionDetails.currentAddressChanged = 'N';
+        } else {
+          transactionDetails.currentAddressChanged = 'Y';
+        }
       }
       if (transactionDetails.currentAddressSame === 'Y' && props.type === 'ADD') {
         transactionDetails.currentAddress = basicDetails.address;
@@ -948,6 +967,7 @@ const TravellerInformationContainer = (props) => {
         diabetesIndicator: '',
         hyperTensionIndicator: '',
         otherIllness: undefined,
+        addressChanged: undefined,
         address: {
           type: '',
           numberAndFloor: '',
@@ -969,6 +989,7 @@ const TravellerInformationContainer = (props) => {
       });
       setTransactionDetails({
         currentAddressSame: undefined,
+        currentAddressChanged: undefined,
         currentAddress: {
           type: '',
           numberAndFloor: '',

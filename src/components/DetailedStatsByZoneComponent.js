@@ -72,7 +72,7 @@ export const DetailedStatsByZoneComponent = (props) => {
   const { handleSearchTextChange, handleFilterChange, handleWardSelection, selectedWard, personsList, onRowClick } = props;
 
   const getWardsList = (wards) => {
-    return wards !== undefined && wards.length > 0 ? wards.map((ward) => 'W' + ward) : [];
+    return wards !== undefined && wards.length > 0 ? wards.map((ward) => ward) : [];
   };
 
   return (
@@ -81,7 +81,7 @@ export const DetailedStatsByZoneComponent = (props) => {
         <Grid item xs={3} className={classes.grid}>
           <Card className={classes.titleCard}>
             <Typography color="textSecondary" className={classes.wardStatsLabel}>
-              Person List by Ward
+              Person List by Ward Number
             </Typography>
           </Card>
           <Paper className={classes.paper}>

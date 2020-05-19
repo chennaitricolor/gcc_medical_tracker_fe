@@ -274,8 +274,8 @@ function renderTextFieldForAddress(
       })}
       multiline={multilineRequired}
       onChange={(event) => handleOnChange(event, key, 'text', idx, calledBy)}
-      autoComplete="off"
       margin={'normal'}
+      autoComplete={'disabled'}
       variant={'outlined'}
     />
   );
@@ -333,7 +333,7 @@ function renderTextField(label, key, travellerInformation, handleOnChange, style
         })}
         multiline={multilineRequired}
         onChange={(event) => handleOnChange(event, key, 'text', idx)}
-        autoComplete="off"
+        autoComplete={'disabled'}
         margin={'normal'}
         variant={'outlined'}
       />
@@ -342,7 +342,6 @@ function renderTextField(label, key, travellerInformation, handleOnChange, style
 }
 
 function renderPhoneNumberField(label, key, travellerInformation, handleOnChange, styles, idx = null) {
-  //const isRequired = (key === 'secondaryPhoneNumber' || key === 'alternatePhoneNumber') ? false : true;
   return (
     <InputMask
       mask="9999999999"
@@ -355,7 +354,7 @@ function renderPhoneNumberField(label, key, travellerInformation, handleOnChange
       })}
       onChange={(value) => handleOnChange(value, key, 'text', idx)}
     >
-      {() => <TextField id={key} variant={'outlined'} className={styles.textField} label={label} />}
+      {() => <TextField id={key} variant={'outlined'} className={styles.textField} label={label} autoComplete={'disabled'} />}
     </InputMask>
   );
 }
@@ -410,7 +409,7 @@ function renderDropDownFieldForAsyncAPICall(
           fullWidth
           inputProps={{
             ...params.inputProps,
-            autoComplete: 'off',
+            autoComplete: 'disabled',
           }}
         />
       )}
@@ -457,7 +456,7 @@ function renderDropDownFieldForAddress(
           fullWidth
           inputProps={{
             ...params.inputProps,
-            autoComplete: 'off',
+            autoComplete: 'disabled',
           }}
         />
       )}
@@ -492,7 +491,7 @@ function renderDropDownField(label, key, dropdownList, travellerInformation, han
           fullWidth
           inputProps={{
             ...params.inputProps,
-            autoComplete: 'off',
+            autoComplete: 'disabled',
           }}
         />
       )}
@@ -601,7 +600,7 @@ const callFailureReasonRadioButton = [
   { label: 'Wrong Number', value: 'wrongNumber' },
 ];
 
-const personStatusRadioButton = [{ label: 'Quarantine', value: 'quarantined' }];
+const personStatusRadioButton = [{ label: 'Quarantine', value: 'Home Quarantine' }];
 
 const genderList = [
   {
@@ -620,7 +619,7 @@ const placeTypeList = ['Mall', 'Theater', 'Place Of Worship', 'Market', 'Others'
 
 const modeOfTravelList = ['Car', 'Bike', 'Public Transport', 'Others'];
 
-const typeOfAddress = ['Apartment', 'Individual House', 'Hospital', 'Others'];
+const typeOfAddress = ['Apartment', 'Home', 'Hospital', 'Others'];
 
 const TravellerInformationComponent = (props) => {
   const styles = useStyles();
@@ -740,7 +739,7 @@ const TravellerInformationComponent = (props) => {
             {renderTextField('Other Illness', 'otherIllness', props.basicDetails, props.handleOnChangeForBasicDetails, styles)}
           </div>
           <div style={{ marginTop: '2%' }} className={styles.subHeading}>
-            Address
+            Permanent Address
             <Divider className={styles.informationDivider} />
             <div style={{ marginTop: '2%' }}>
               {renderDropDownFieldForAddress(
@@ -909,18 +908,20 @@ const TravellerInformationComponent = (props) => {
                 props.handleOnChangeForTransactionDetails,
                 styles,
               )}
-              {renderRadioButtonField(
-                'Current Address Same as Permanent',
-                'currentAddressSame',
-                yesNoRadioButton,
-                props.transactionDetails,
-                props.handleOnChangeForTransactionDetails,
-                styles,
-              )}
+              {props.type === 'ADD'
+                ? renderRadioButtonField(
+                    'Current Address Same as Permanent',
+                    'currentAddressSame',
+                    yesNoRadioButton,
+                    props.transactionDetails,
+                    props.handleOnChangeForTransactionDetails,
+                    styles,
+                  )
+                : ''}
             </div>
-            {props.transactionDetails.currentAddressSame === 'N' ? (
+            {(props.type === 'ADD' && props.transactionDetails.currentAddressSame === 'N') || props.type === 'UPDATE' ? (
               <div style={{ marginTop: '2%' }} className={styles.subHeading}>
-                Address
+                Current Address
                 <Divider className={styles.informationDivider} />
                 <div style={{ marginTop: '2%' }}>
                   {renderDropDownFieldForAddress(

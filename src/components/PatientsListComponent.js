@@ -84,7 +84,10 @@ const PatientsListComponent = (props) => {
   };
 
   return (
-    <TableContainer component={Paper} style={{ marginLeft: '1%', marginRight: '1%', width: 'auto', marginTop: '2%' }}>
+    <TableContainer
+      component={Paper}
+      style={{ marginLeft: '1%', marginRight: '1%', width: 'auto', marginTop: '2%', overflow: 'auto', height: '85%' }}
+    >
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>

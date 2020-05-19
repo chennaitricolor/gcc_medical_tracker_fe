@@ -16,19 +16,8 @@ const loadingComponentStyle = {
 
 const DetailedStatsByZoneContainer = (props) => {
   const [searchText, setSearchText] = useState('');
-  const [selectedWard, setSelectedWard] = useState('');
   const personsByWard = useSelector((state) => state.getPersonsByWardReducer);
   const dispatch = useDispatch();
-
-  const handleWardSelection = (event) => {
-    setSelectedWard(event);
-    dispatch({
-      type: getPersonsByWardActions.GET_PERSONS_BY_WARD,
-      payload: {
-        wardId: event.slice(1),
-      },
-    });
-  };
 
   const handleSearchTextChange = (event) => {
     setSearchText(event.target.value);
@@ -69,8 +58,8 @@ const DetailedStatsByZoneContainer = (props) => {
             handleSearchTextChange={handleSearchTextChange}
             handleFilterChange={handleFilterChange}
             wardsList={props.wards}
-            handleWardSelection={handleWardSelection}
-            selectedWard={selectedWard}
+            handleWardSelection={props.handleWardSelection}
+            selectedWard={props.selectedWard}
             personsList={getPersonsByWardFromAPI(personsByWard)}
             onRowClick={onRowClick}
           />

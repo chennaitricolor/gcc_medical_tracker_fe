@@ -8,7 +8,7 @@ const app = express();
 app.use(cookieParser());
 
 const medicalTrackerAPIProxySettings = {
-  target: process.env.AGENT_ADMIN_API_URL !== undefined ? process.env.AGENT_ADMIN_API_URL : 'https://api.gccservice.in',
+  target: process.env.AGENT_ADMIN_API_URL !== undefined ? process.env.AGENT_ADMIN_API_URL : 'https://api.dev.gccservice.in',
   changeOrigin: true,
   ws: true,
   secure: false,

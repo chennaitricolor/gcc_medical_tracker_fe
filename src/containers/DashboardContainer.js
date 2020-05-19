@@ -6,6 +6,7 @@ import actions from '../actions/GetZonesAction';
 import LoadingComponent from '../components/LoadingComponent';
 import Alert from '@material-ui/lab/Alert';
 import DetailedStatsByZoneContainer from './DetailedStatsByZoneContainer';
+import getPersonsByWardActions from '../actions/GetPersonsByWardAction';
 
 const loadingComponentStyle = {
   top: '40%',
@@ -18,15 +19,37 @@ const loadingComponentStyle = {
 const DashboardContainer = (props) => {
   const { selectedTab, handleOpenForDialog } = props;
   const dispatch = useDispatch();
+
   const getAllZones = useSelector((state) => state.getAllZonesReducer);
+
   const [selectedZone, setSelectedZone] = useState('');
   const [wards, setWards] = useState([]);
+  const [selectedWard, setSelectedWard] = useState('');
 
   useEffect(() => {
     dispatch({
       type: actions.GET_ALL_ZONE,
     });
   }, []);
+
+  useEffect(() => {
+    if (getAllZones !== undefined) {
+      if (getAllZones.allZones !== undefined && getAllZones.allZones.zones !== undefined && getAllZones.allZones.zones.length > 0) {
+        const zoneNumber = getAllZones.allZones.zones[0].zone;
+        const wardsBasedOnZoneNumber = getAllZones.allZones.zones.find((zoneItem) => zoneItem.zone === zoneNumber);
+        const wards = wardsBasedOnZoneNumber !== undefined ? wardsBasedOnZoneNumber.ward.split(',') : [];
+        setSelectedZone(zoneNumber);
+        setWards(wards);
+        setSelectedWard(wards[0]);
+        dispatch({
+          type: getPersonsByWardActions.GET_PERSONS_BY_WARD,
+          payload: {
+            wardId: wards[0],
+          },
+        });
+      }
+    }
+  }, [getAllZones]);
 
   const handleZoneSelectionChange = (event, value) => {
     const zoneNumber = event.target.value;
@@ -40,6 +63,16 @@ const DashboardContainer = (props) => {
 
   const getZonesList = () => {
     return getAllZones !== undefined && getAllZones.allZones !== undefined && getAllZones.allZones.success ? getAllZones.allZones.zones : [];
+  };
+
+  const handleWardSelection = (event) => {
+    setSelectedWard(event);
+    dispatch({
+      type: getPersonsByWardActions.GET_PERSONS_BY_WARD,
+      payload: {
+        wardId: event,
+      },
+    });
   };
 
   const getElementsToRender = () => {
@@ -63,7 +96,12 @@ const DashboardContainer = (props) => {
             onZoneSelectionChange={handleZoneSelectionChange}
             selectedZone={selectedZone}
           />
-          <DetailedStatsByZoneContainer wards={wards} handleOpenForDialog={handleOpenForDialog} />
+          <DetailedStatsByZoneContainer
+            wards={wards}
+            handleOpenForDialog={handleOpenForDialog}
+            selectedWard={selectedWard}
+            handleWardSelection={handleWardSelection}
+          />
         </div>
       );
     }
