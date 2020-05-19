@@ -584,6 +584,12 @@ const matchStyleForDropdown = {
   display: 'inline-block',
 };
 
+const matchStyleForAddressDropdown = {
+  width: '300px',
+  marginRight: '2%',
+  display: 'inline-block',
+};
+
 const yesNoRadioButton = [
   { label: 'Yes', value: 'Y' },
   { label: 'No', value: 'N' },
@@ -744,7 +750,7 @@ const TravellerInformationComponent = (props) => {
                 props.basicDetails,
                 props.handleAddressFieldsOnValueChange,
                 styles,
-                matchStyleForDropdown,
+                matchStyleForAddressDropdown,
                 null,
                 'Basic Details',
                 props.basicDetails.address,
@@ -770,12 +776,14 @@ const TravellerInformationComponent = (props) => {
                 props.handleAddressFieldChanges,
                 props.handleAddressFieldsOnValueChange,
                 styles,
-                matchStyleForDropdown,
+                matchStyleForAddressDropdown,
                 null,
                 'Basic Details',
                 props.basicDetails.address,
                 'street',
               )}
+            </div>
+            <div style={{ marginTop: '2%' }}>
               {renderDropDownFieldForAsyncAPICall(
                 'Area',
                 'area',
@@ -784,7 +792,7 @@ const TravellerInformationComponent = (props) => {
                 props.handleAddressFieldChanges,
                 props.handleAddressFieldsOnValueChange,
                 styles,
-                matchStyleForDropdown,
+                matchStyleForAddressDropdown,
                 null,
                 'Basic Details',
                 props.basicDetails.address,
@@ -802,19 +810,19 @@ const TravellerInformationComponent = (props) => {
                 props.basicDetails.address,
                 'city',
               )}
+              {renderTextFieldForAddress(
+                'State',
+                'state',
+                props.basicDetails,
+                props.handleAddressFieldsOnValueChange,
+                styles,
+                false,
+                null,
+                'Basic Details',
+                props.basicDetails.address,
+                'state',
+              )}
               <div style={{ marginTop: '2%' }}>
-                {renderTextFieldForAddress(
-                  'State',
-                  'state',
-                  props.basicDetails,
-                  props.handleAddressFieldsOnValueChange,
-                  styles,
-                  false,
-                  null,
-                  'Basic Details',
-                  props.basicDetails.address,
-                  'state',
-                )}
                 {renderTextFieldForAddress(
                   'Pin Code',
                   'pinCode',
@@ -922,7 +930,7 @@ const TravellerInformationComponent = (props) => {
                     props.transactionDetails,
                     props.handleAddressFieldsOnValueChange,
                     styles,
-                    matchStyleForDropdown,
+                    matchStyleForAddressDropdown,
                     null,
                     'Transaction Details',
                     props.transactionDetails.currentAddress,
@@ -948,39 +956,39 @@ const TravellerInformationComponent = (props) => {
                     props.handleAddressFieldChanges,
                     props.handleAddressFieldsOnValueChange,
                     styles,
-                    matchStyleForDropdown,
+                    matchStyleForAddressDropdown,
                     null,
                     'Transaction Details',
                     props.transactionDetails.currentAddress,
                     'street',
                   )}
-                  {renderDropDownFieldForAsyncAPICall(
-                    'Area',
-                    'area',
-                    props.locationDetails !== undefined ? props.locationDetails.locations : [],
-                    props.transactionDetails,
-                    props.handleAddressFieldChanges,
-                    props.handleAddressFieldsOnValueChange,
-                    styles,
-                    matchStyleForDropdown,
-                    null,
-                    'Transaction Details',
-                    props.transactionDetails.currentAddress,
-                    'area',
-                  )}
-                  {renderTextFieldForAddress(
-                    'City',
-                    'city',
-                    props.transactionDetails,
-                    props.handleAddressFieldsOnValueChange,
-                    styles,
-                    false,
-                    null,
-                    'Transaction Details',
-                    props.transactionDetails.currentAddress,
-                    'city',
-                  )}
                   <div style={{ marginTop: '2%' }}>
+                    {renderDropDownFieldForAsyncAPICall(
+                      'Area',
+                      'area',
+                      props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                      props.transactionDetails,
+                      props.handleAddressFieldChanges,
+                      props.handleAddressFieldsOnValueChange,
+                      styles,
+                      matchStyleForAddressDropdown,
+                      null,
+                      'Transaction Details',
+                      props.transactionDetails.currentAddress,
+                      'area',
+                    )}
+                    {renderTextFieldForAddress(
+                      'City',
+                      'city',
+                      props.transactionDetails,
+                      props.handleAddressFieldsOnValueChange,
+                      styles,
+                      false,
+                      null,
+                      'Transaction Details',
+                      props.transactionDetails.currentAddress,
+                      'city',
+                    )}
                     {renderTextFieldForAddress(
                       'State',
                       'state',
@@ -993,6 +1001,8 @@ const TravellerInformationComponent = (props) => {
                       props.transactionDetails.currentAddress,
                       'state',
                     )}
+                  </div>
+                  <div style={{ marginTop: '2%' }}>
                     {renderTextFieldForAddress(
                       'Pin Code',
                       'pinCode',
@@ -1081,7 +1091,7 @@ const TravellerInformationComponent = (props) => {
                           field,
                           props.handleAddressFieldsOnValueChange,
                           styles,
-                          matchStyleForDropdown,
+                          matchStyleForAddressDropdown,
                           idx,
                           'Travel Details',
                           field.address,
@@ -1107,12 +1117,14 @@ const TravellerInformationComponent = (props) => {
                           props.handleAddressFieldChanges,
                           props.handleAddressFieldsOnValueChange,
                           styles,
-                          matchStyleForDropdown,
+                          matchStyleForAddressDropdown,
                           idx,
                           'Travel Details',
                           field.address,
                           'street',
                         )}
+                      </div>
+                      <div style={{ marginTop: '2%' }}>
                         {renderDropDownFieldForAsyncAPICall(
                           'Area',
                           'area',
@@ -1121,7 +1133,7 @@ const TravellerInformationComponent = (props) => {
                           props.handleAddressFieldChanges,
                           props.handleAddressFieldsOnValueChange,
                           styles,
-                          matchStyleForDropdown,
+                          matchStyleForAddressDropdown,
                           idx,
                           'Travel Details',
                           field.address,
@@ -1139,32 +1151,32 @@ const TravellerInformationComponent = (props) => {
                           field.address,
                           'city',
                         )}
-                        <div style={{ marginTop: '2%' }}>
-                          {renderTextFieldForAddress(
-                            'State',
-                            'state',
-                            field,
-                            props.handleAddressFieldsOnValueChange,
-                            styles,
-                            false,
-                            idx,
-                            'Travel Details',
-                            field.address,
-                            'state',
-                          )}
-                          {renderTextFieldForAddress(
-                            'Pin Code',
-                            'pinCode',
-                            field,
-                            props.handleAddressFieldsOnValueChange,
-                            styles,
-                            false,
-                            idx,
-                            'Travel Details',
-                            field.address,
-                            'pinCode',
-                          )}
-                        </div>
+                        {renderTextFieldForAddress(
+                          'State',
+                          'state',
+                          field,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          false,
+                          idx,
+                          'Travel Details',
+                          field.address,
+                          'state',
+                        )}
+                      </div>
+                      <div style={{ marginTop: '2%' }}>
+                        {renderTextFieldForAddress(
+                          'Pin Code',
+                          'pinCode',
+                          field,
+                          props.handleAddressFieldsOnValueChange,
+                          styles,
+                          false,
+                          idx,
+                          'Travel Details',
+                          field.address,
+                          'pinCode',
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1254,7 +1266,7 @@ const TravellerInformationComponent = (props) => {
                           field,
                           props.handleAddressFieldsOnValueChange,
                           styles,
-                          matchStyleForDropdown,
+                          matchStyleForAddressDropdown,
                           idx,
                           'Contracted Details',
                           field.address,
@@ -1280,39 +1292,39 @@ const TravellerInformationComponent = (props) => {
                           props.handleAddressFieldChanges,
                           props.handleAddressFieldsOnValueChange,
                           styles,
-                          matchStyleForDropdown,
+                          matchStyleForAddressDropdown,
                           idx,
                           'Contracted Details',
                           field.address,
                           'street',
                         )}
-                        {renderDropDownFieldForAsyncAPICall(
-                          'Area',
-                          'area',
-                          props.locationDetails !== undefined ? props.locationDetails.locations : [],
-                          field,
-                          props.handleAddressFieldChanges,
-                          props.handleAddressFieldsOnValueChange,
-                          styles,
-                          matchStyleForDropdown,
-                          idx,
-                          'Contracted Details',
-                          field.address,
-                          'area',
-                        )}
-                        {renderTextFieldForAddress(
-                          'City',
-                          'city',
-                          field,
-                          props.handleAddressFieldsOnValueChange,
-                          styles,
-                          false,
-                          idx,
-                          'Contracted Details',
-                          field.address,
-                          'city',
-                        )}
                         <div style={{ marginTop: '2%' }}>
+                          {renderDropDownFieldForAsyncAPICall(
+                            'Area',
+                            'area',
+                            props.locationDetails !== undefined ? props.locationDetails.locations : [],
+                            field,
+                            props.handleAddressFieldChanges,
+                            props.handleAddressFieldsOnValueChange,
+                            styles,
+                            matchStyleForAddressDropdown,
+                            idx,
+                            'Contracted Details',
+                            field.address,
+                            'area',
+                          )}
+                          {renderTextFieldForAddress(
+                            'City',
+                            'city',
+                            field,
+                            props.handleAddressFieldsOnValueChange,
+                            styles,
+                            false,
+                            idx,
+                            'Contracted Details',
+                            field.address,
+                            'city',
+                          )}
                           {renderTextFieldForAddress(
                             'State',
                             'state',
@@ -1325,6 +1337,8 @@ const TravellerInformationComponent = (props) => {
                             field.address,
                             'state',
                           )}
+                        </div>
+                        <div style={{ marginTop: '2%' }}>
                           {renderTextFieldForAddress(
                             'Pin Code',
                             'pinCode',

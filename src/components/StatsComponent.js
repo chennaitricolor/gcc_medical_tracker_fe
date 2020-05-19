@@ -70,7 +70,7 @@ export const StatsComponent = props => {
 
     const getZoneNamesFromProps = (zonesArray) => {
         if(zonesArray !== undefined && zonesArray.length > 0)
-            return zonesArray.map(zoneItem => 'Zone ' + zoneItem.zone);
+            return zonesArray.map(zoneItem => zoneItem.zone);
         else
             return [];
     };

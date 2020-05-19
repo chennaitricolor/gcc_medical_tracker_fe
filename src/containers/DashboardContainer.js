@@ -29,7 +29,7 @@ const DashboardContainer = (props) => {
   }, []);
 
   const handleZoneSelectionChange = (event, value) => {
-    const zoneNumber = event.target.value.split(' ')[1];
+    const zoneNumber = event.target.value;
     setSelectedZone(event.target.value);
     const allZones =
       getAllZones !== undefined && getAllZones.allZones !== undefined && getAllZones.allZones.success ? getAllZones.allZones.zones : [];
