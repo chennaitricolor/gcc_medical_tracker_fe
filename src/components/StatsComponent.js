@@ -95,7 +95,7 @@ export const StatsComponent = (props) => {
                   Select a Zone
                 </MenuItem>
                 {getZoneNamesFromProps(props.zonesList).map((option) => {
-                  return <MenuItem value={option}>{option}</MenuItem>;
+                  return <MenuItem key={option} value={option}>{option}</MenuItem>;
                 })}
               </Select>
               <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center', marginTop: '10px' }}>
@@ -105,46 +105,46 @@ export const StatsComponent = (props) => {
           }
         </CardContent>
       </Card>
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography variant="h6" component="h6" className={classes.contactedCard} style={{ textAlign: 'center' }}>
-            {props.totalEntriesCount}
-          </Typography>
-          <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center' }}>
-            {statsComponentLabels.contacted}
-          </Typography>
-        </CardContent>
-      </Card>
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography variant="h6" component="h6" className={classes.notReachableAndMissingCards} style={{ textAlign: 'center' }}>
-            {props.totalEntriesCount}
-          </Typography>
-          <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center' }}>
-            {statsComponentLabels.notReachable}
-          </Typography>
-        </CardContent>
-      </Card>
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography variant="h6" component="h6" className={classes.notReachableAndMissingCards} style={{ textAlign: 'center' }}>
-            {props.totalEntriesCount}
-          </Typography>
-          <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center' }}>
-            {statsComponentLabels.dataMissing}
-          </Typography>
-        </CardContent>
-      </Card>
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography variant="h6" component="h6" className={classes.symptomaticCard} style={{ textAlign: 'center' }}>
-            {props.totalEntriesCount}
-          </Typography>
-          <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center' }}>
-            {statsComponentLabels.symptomatic}
-          </Typography>
-        </CardContent>
-      </Card>
+      {/*<Card className={classes.card}>*/}
+      {/*  <CardContent>*/}
+      {/*    <Typography variant="h6" component="h6" className={classes.contactedCard} style={{ textAlign: 'center' }}>*/}
+      {/*      {props.totalEntriesCount}*/}
+      {/*    </Typography>*/}
+      {/*    <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center' }}>*/}
+      {/*      {statsComponentLabels.contacted}*/}
+      {/*    </Typography>*/}
+      {/*  </CardContent>*/}
+      {/*</Card>*/}
+      {/*<Card className={classes.card}>*/}
+      {/*  <CardContent>*/}
+      {/*    <Typography variant="h6" component="h6" className={classes.notReachableAndMissingCards} style={{ textAlign: 'center' }}>*/}
+      {/*      {props.totalEntriesCount}*/}
+      {/*    </Typography>*/}
+      {/*    <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center' }}>*/}
+      {/*      {statsComponentLabels.notReachable}*/}
+      {/*    </Typography>*/}
+      {/*  </CardContent>*/}
+      {/*</Card>*/}
+      {/*<Card className={classes.card}>*/}
+      {/*  <CardContent>*/}
+      {/*    <Typography variant="h6" component="h6" className={classes.notReachableAndMissingCards} style={{ textAlign: 'center' }}>*/}
+      {/*      {props.totalEntriesCount}*/}
+      {/*    </Typography>*/}
+      {/*    <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center' }}>*/}
+      {/*      {statsComponentLabels.dataMissing}*/}
+      {/*    </Typography>*/}
+      {/*  </CardContent>*/}
+      {/*</Card>*/}
+      {/*<Card className={classes.card}>*/}
+      {/*  <CardContent>*/}
+      {/*    <Typography variant="h6" component="h6" className={classes.symptomaticCard} style={{ textAlign: 'center' }}>*/}
+      {/*      {props.totalEntriesCount}*/}
+      {/*    </Typography>*/}
+      {/*    <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center' }}>*/}
+      {/*      {statsComponentLabels.symptomatic}*/}
+      {/*    </Typography>*/}
+      {/*  </CardContent>*/}
+      {/*</Card>*/}
     </div>
   );
 };
