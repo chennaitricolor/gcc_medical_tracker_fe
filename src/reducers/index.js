@@ -6,6 +6,7 @@ import getPersonsByWardReducer from './GetPersonsByWardReducer';
 import getLocationsByTypeReducer from './GetLocationsByTypeReducer';
 import getPersonsDetailReducer from './getPersonsDetailReducer';
 import contractedPersonReducer from './contractedPersonReducer';
+import getDashboardEmbedUrlReducer from './GetDashboardEmbedUrlReducer';
 
 const reducers = combineReducers({
   loginResponse,
@@ -15,6 +16,7 @@ const reducers = combineReducers({
   getLocationsByTypeReducer,
   getPersonsDetailReducer,
   contractedPersonReducer,
+  getDashboardEmbedUrlReducer,
 });
 
 export default reducers;

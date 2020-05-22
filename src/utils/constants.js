@@ -23,4 +23,5 @@ export const apiUrls = {
   addContractedPersons: '/medicaltracker/form/persons',
   locationsByType: '/medicaltracker/form/locations/street_name',
   updateContractedPersons: '/medicaltracker/form/persons/:id',
+  getDashboardEmbedUrl: '/medicaltracker/dashboard/reports/gcc-dashboard'
 };
