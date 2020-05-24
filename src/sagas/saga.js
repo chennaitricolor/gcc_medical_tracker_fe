@@ -17,6 +17,8 @@ import getPersonsDetailSaga from "./getPersonsDetailSaga";
 import getLocationsByType from './GetLocationsByTypeSaga';
 import addContractedPersonsSaga from './addContractedPersonSaga';
 import updateContractedPersonsSaga from './updateContractedPersonsSaga';
+import getDashboardEmbedAction from '../actions/GetDashboardEmbedAction';
+import getDashboardEmbedUrl from './GetDashboardEmbedSaga';
 
 export default function* saga() {
   yield takeLatest(loginActions.INITIATE_LOGIN, loginSaga);
@@ -28,4 +30,5 @@ export default function* saga() {
   yield takeLatest(addContractedPersonsAction.ADD_CONTRACTED_PERSONS, addContractedPersonsSaga);
   yield takeLatest(getLocationsByTypeAction.GET_LOCATIONS_BY_TYPE, getLocationsByType);
   yield takeLatest(updateContractedPersonsAction.UPDATE_CONTRACTED_PERSONS, updateContractedPersonsSaga);
+  yield takeLatest(getDashboardEmbedAction.GET_DASHBOARD_EMBED_URL, getDashboardEmbedUrl);
 }

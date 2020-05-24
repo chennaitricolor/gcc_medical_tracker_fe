@@ -7,6 +7,7 @@ import LoadingComponent from '../components/LoadingComponent';
 import Alert from '@material-ui/lab/Alert';
 import DetailedStatsByZoneContainer from './DetailedStatsByZoneContainer';
 import getPersonsByWardActions from '../actions/GetPersonsByWardAction';
+import ReportComponent from '../components/ReportComponent';
 
 const loadingComponentStyle = {
   top: '40%',
@@ -30,7 +31,7 @@ const DashboardContainer = (props) => {
     dispatch({
       type: actions.GET_ALL_ZONE,
     });
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (getAllZones !== undefined) {
@@ -49,7 +50,7 @@ const DashboardContainer = (props) => {
         });
       }
     }
-  }, [getAllZones]);
+  }, [dispatch, getAllZones]);
 
   const handleZoneSelectionChange = (event, value) => {
     const zoneNumber = event.target.value;
@@ -109,7 +110,7 @@ const DashboardContainer = (props) => {
 
   if (selectedTab === 0) {
     return getElementsToRender();
-  } else if (selectedTab === 1) return <h1>Reports Page - In Progress</h1>;
+  } else if (selectedTab === 1) return <ReportComponent />;
 };
 
 DashboardContainer.propTypes = {
