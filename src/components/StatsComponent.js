@@ -8,6 +8,7 @@ import { Tooltip } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { statsComponentLabels } from '../utils/constants';
+import FormControl from '@material-ui/core/FormControl';
 
 const useStyles = makeStyles({
   card: {
@@ -79,32 +80,32 @@ export const StatsComponent = (props) => {
 
   return (
     <div>
-      <Card className={classes.card}>
-        <CardContent>
-          {
-            <div>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={props.selectedZone}
-                style={{ fontWeight: 'bold', marginTop: '30px', marginLeft: '20px' }}
-                disableUnderline
-                onChange={(event, value) => props.onZoneSelectionChange(event, value)}
-              >
-                <MenuItem value="Select a Zone" disabled>
-                  Select a Zone
+      <div style={{ marginTop: '2%', marginLeft: '3%' }}>
+        <Typography color="textSecondary" className={classes.statsLabel} style={{ marginTop: '1%', display: 'inline-block' }}>
+          Please Select Zone
+        </Typography>
+        <FormControl variant="outlined">
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={props.selectedZone}
+            style={{ fontWeight: 'bold', marginLeft: '20px', width: "auto" }}
+            disableUnderline
+            onChange={(event, value) => props.onZoneSelectionChange(event, value)}
+          >
+            <MenuItem value="Select a Zone" disabled>
+              Select a Zone
+            </MenuItem>
+            {getZoneNamesFromProps(props.zonesList).map((option) => {
+              return (
+                <MenuItem key={option} value={option}>
+                  {option}
                 </MenuItem>
-                {getZoneNamesFromProps(props.zonesList).map((option) => {
-                  return <MenuItem key={option} value={option}>{option}</MenuItem>;
-                })}
-              </Select>
-              <Typography color="textSecondary" className={classes.statsLabel} style={{ textAlign: 'center', marginTop: '10px' }}>
-                ZONE
-              </Typography>
-            </div>
-          }
-        </CardContent>
-      </Card>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </div>
       {/*<Card className={classes.card}>*/}
       {/*  <CardContent>*/}
       {/*    <Typography variant="h6" component="h6" className={classes.contactedCard} style={{ textAlign: 'center' }}>*/}

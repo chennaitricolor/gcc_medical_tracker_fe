@@ -44,13 +44,14 @@ export const HeaderComponent = (props) => {
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar style={{ minHeight: '48px' }}>
           <Typography variant="h6" className={classes.title}>
             {props.title}
           </Typography>
           <Tabs className={classes.tabs} value={props.selectedTab} indicatorColor="secondary" onChange={props.handleTabChange}>
             <Tab className={classes.tabTitle} label={headerTabsTitle.pipeline} />
             <Tab className={classes.tabTitle} label={headerTabsTitle.reports} />
+            <Tab className={classes.tabTitle} label={headerTabsTitle.mapView} />
           </Tabs>
           <Button style={buttonStyle} variant={'contained'} color="secondary" onClick={() => props.handleOpenForDialog('ADD', null)}>
             ADD CONTRACTED

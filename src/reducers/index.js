@@ -7,6 +7,7 @@ import getLocationsByTypeReducer from './GetLocationsByTypeReducer';
 import getPersonsDetailReducer from './getPersonsDetailReducer';
 import contractedPersonReducer from './contractedPersonReducer';
 import getDashboardEmbedUrlReducer from './GetDashboardEmbedUrlReducer';
+import searchHospitalNameReducer from './searchHospitalNameReducer';
 
 const reducers = combineReducers({
   loginResponse,
@@ -14,6 +15,7 @@ const reducers = combineReducers({
   getAllZonesReducer,
   getPersonsByWardReducer,
   getLocationsByTypeReducer,
+  searchHospitalNameReducer,
   getPersonsDetailReducer,
   contractedPersonReducer,
   getDashboardEmbedUrlReducer,

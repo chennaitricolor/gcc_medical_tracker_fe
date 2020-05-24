@@ -34,7 +34,6 @@ export const ReportComponent = (props) => {
   useEffect(() => {
     if (getDashboardEmbedUrl !== undefined && getDashboardEmbedUrl.dashboardEmbedUrl !== undefined) {
       options.url = getDashboardEmbedUrl.dashboardEmbedUrl.EmbedUrl;
-      console.log(options.url);
       embedDashboard(options);
     }
   }, [getDashboardEmbedUrl]);

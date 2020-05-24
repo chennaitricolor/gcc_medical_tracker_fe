@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
     marginRight: '3%',
     marginTop: '2%',
     marginLeft: '3%',
-    height: '650px',
+    height: '700px',
   },
   grid: {
     height: '100%',
@@ -74,8 +74,6 @@ export const DetailedStatsByZoneComponent = (props) => {
   const getWardsList = (wards) => {
     return wards !== undefined && wards.length > 0 ? wards.map((ward) => ward) : [];
   };
-
-  console.log('this is also called');
 
   return (
     <div className={classes.root}>

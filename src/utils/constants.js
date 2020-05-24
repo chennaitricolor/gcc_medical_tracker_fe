@@ -5,6 +5,7 @@ export const titleConstants = {
 export const headerTabsTitle = {
   pipeline: 'Pipeline',
   reports: 'Reports',
+  mapView: 'Map View',
 };
 
 export const statsComponentLabels = {
@@ -22,6 +23,7 @@ export const apiUrls = {
   getPersonsDetails: '/medicaltracker/form/persons/:id',
   addContractedPersons: '/medicaltracker/form/persons',
   locationsByType: '/medicaltracker/form/locations/street_name',
+  searchHospitalName: '/medicaltracker/form/hospitals',
   updateContractedPersons: '/medicaltracker/form/persons/:id',
   getDashboardEmbedUrl: '/medicaltracker/dashboard/reports/gcc-dashboard'
 };

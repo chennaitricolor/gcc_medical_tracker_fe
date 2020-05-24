@@ -10,10 +10,12 @@ import { formatDateBasedOnFormat } from '../utils/GeneralUtils';
 import getLocationsByType from '../actions/GetLocationsByType';
 import LoadingComponent from '../components/LoadingComponent';
 import _ from 'lodash';
+import searchHospitalListAction from '../actions/searchHospitalListAction';
 
 const TravellerInformationContainer = (props) => {
   const dispatch = useDispatch();
   const locationsList = useSelector((state) => state.getLocationsByTypeReducer);
+  const hospitalDetailsList = useSelector((state) => state.searchHospitalNameReducer);
   const addContractedPersonResponse = useSelector((state) => state.contractedPersonReducer);
 
   const personDetails = useSelector((state) => state.getPersonsDetailReducer.personDetails);
@@ -71,11 +73,26 @@ const TravellerInformationContainer = (props) => {
     healthStatus: '',
     symptoms: undefined,
     dateOfFirstSymptom: undefined,
+    dateOfAdmission: undefined,
+    hospitalId: undefined,
   });
 
   const [travelDetails, setTravelDetails] = useState([]);
 
   const [contractedPersonFields, setContractedPersonFields] = useState([]);
+
+  const [hospitalDetails, setHospitalDetails] = useState({
+    visitedHospital: '',
+    hospitalName: '',
+    address: undefined,
+  });
+
+  const getValue = (value) => {
+    if (value !== null && value !== '') {
+      return value;
+    }
+    return undefined;
+  };
 
   useEffect(() => {
     if (props.type === 'ADD') {
@@ -130,18 +147,16 @@ const TravellerInformationContainer = (props) => {
           symptoms: undefined,
           dateOfFirstSymptom: undefined,
         });
+        setHospitalDetails({
+          visitedHospital: '',
+          hospitalName: '',
+          address: undefined,
+        });
         setTravelDetails([]);
         setContractedPersonFields([]);
       };
     }
   }, [props.showDialog]);
-
-  const getValue = (value) => {
-    if (value !== null && value !== '') {
-      return value;
-    }
-    return undefined;
-  };
 
   useEffect(() => {
     if (props.type === 'UPDATE') {
@@ -191,7 +206,15 @@ const TravellerInformationContainer = (props) => {
             healthStatus: getValue(personDetails.lastCall.person_status),
             symptoms: getValue(personDetails.lastCall.symptoms),
             dateOfFirstSymptom: getValue(formatDateBasedOnFormat(personDetails.lastCall.date_of_first_symptom, 'DD-MM-YYYY')),
+            dateOfAdmission: getValue(formatDateBasedOnFormat(personDetails.lastCall.date_admitted_in_hospital, 'DD-MM-YYYY')),
+            hospitalId: getValue(personDetails.lastCall.hospital_id),
           });
+          if (personDetails.lastCall.hospital_id !== undefined && personDetails.lastCall.hospital_id !== null) {
+            setHospitalDetails({
+              visitedHospital: 'Y',
+              hospitalName: getValue(personDetails.lastCall.hospital.name),
+            })
+          }
         }
         if (personDetails.travel !== null) {
           const values = [...travelDetails];
@@ -356,6 +379,17 @@ const TravellerInformationContainer = (props) => {
           });
         }
       }
+      if (type === 'dropdown') {
+        if (event !== null) {
+          setTransactionDetails({
+            [id]: event.value === undefined ? event : event.value,
+          });
+        } else {
+          setTransactionDetails({
+            [id]: undefined,
+          });
+        }
+      }
       if (type === 'radioButton') {
         if (event !== null) {
           setTransactionDetails({
@@ -377,6 +411,16 @@ const TravellerInformationContainer = (props) => {
     }
   };
 
+  const handleOnChangeForHospitalDetails = (event, id, type, idx, dateFormat) => {
+    if (type === 'radioButton') {
+      if (event !== null) {
+        setHospitalDetails({
+          [id]: event.target.value,
+        });
+      }
+    }
+  };
+
   const handleAddressFieldInput = (event, id, type, i) => {
     setShowError(false);
     if (event.length > 0 && event.length % 3 === 0) {
@@ -389,6 +433,46 @@ const TravellerInformationContainer = (props) => {
           },
         },
       });
+    }
+  };
+
+  const handleHospitalFieldInput = (event, id, type, i) => {
+    if (event.length > 0 && event.length % 3 === 0) {
+      dispatch({
+        type: searchHospitalListAction.SEARCH_HOSPITAL_DETAILS,
+        payload: {
+          pathVariable: id,
+          param: {
+            name: event,
+          },
+        },
+      });
+    }
+  };
+
+  const handleHospitalFieldOnChange = (event, id, type, i, calledBy) => {
+    setShowError(false);
+    if (calledBy === 'Hospital Details') {
+      if (type === 'dropdown') {
+        if (event !== null) {
+          const selectedHospitalList =
+            hospitalDetailsList !== undefined &&
+            hospitalDetailsList.hospitalDetails !== undefined &&
+            hospitalDetailsList.hospitalDetails.hospitals !== undefined
+              ? hospitalDetailsList.hospitalDetails.hospitals.filter((hospital) => hospital.name === event)
+              : [];
+          const selectedHospital = selectedHospitalList.length > 0 ? selectedHospitalList[0] : '';
+          setHospitalDetails({
+            ...hospitalDetails,
+            hospitalName: event,
+            address: selectedHospital.address,
+          });
+          setTransactionDetails({
+            ...transactionDetails,
+            hospitalId: selectedHospital.id,
+          });
+        }
+      }
     }
   };
 
@@ -760,7 +844,9 @@ const TravellerInformationContainer = (props) => {
 
     const isBasicDetailsInvalid = Object.keys(basicDetails).some((key) => {
       return (
-        !['passport', 'secondaryPhoneNumber', 'otherIllness', 'remarks', 'address', 'countryVisited', 'dateOfArraival', 'addressChanged'].includes(key) &&
+        !['passport', 'secondaryPhoneNumber', 'otherIllness', 'remarks', 'address', 'countryVisited', 'dateOfArraival', 'addressChanged'].includes(
+          key,
+        ) &&
         (basicDetails[key] === '' || basicDetails[key] === undefined)
       );
     });
@@ -799,8 +885,7 @@ const TravellerInformationContainer = (props) => {
 
     let isAddressInvalid;
 
-    console.log(props.type, address);
-    if (props.type === "ADD") {
+    if (props.type === 'ADD') {
       isAddressInvalid =
         transactionDetails['currentAddressSame'] !== undefined &&
         transactionDetails['currentAddressSame'] === 'N' &&
@@ -813,7 +898,8 @@ const TravellerInformationContainer = (props) => {
           address.state === undefined ||
           address.pinCode === undefined);
     } else {
-      isAddressInvalid = address.type === '' ||
+      isAddressInvalid =
+        address.type === '' ||
         address.numberAndFloor === '' ||
         address.street === '' ||
         address.area === '' ||
@@ -869,7 +955,6 @@ const TravellerInformationContainer = (props) => {
   };
 
   const handleSave = () => {
-    console.log(basicDetails, callDetails, transactionDetails);
     if (
       isInvalidBasicDetails() ||
       isInvalidCallDetails() ||
@@ -1004,6 +1089,11 @@ const TravellerInformationContainer = (props) => {
         symptoms: undefined,
         dateOfFirstSymptom: undefined,
       });
+      setHospitalDetails({
+        visitedHospital: '',
+        hospitalName: '',
+        address: undefined,
+      });
       setTravelDetails([]);
       setContractedPersonFields([]);
     }
@@ -1035,9 +1125,11 @@ const TravellerInformationContainer = (props) => {
               transactionDetails={transactionDetails}
               travelDetails={travelDetails}
               contractedFields={contractedPersonFields}
+              hospitalDetails={hospitalDetails}
               handleOnChangeForBasicDetails={handleOnChangeForBasicDetails}
               handleOnChangeForCallDetails={handleOnChangeForCallDetails}
               handleOnChangeForTransactionDetails={handleOnChangeForTransactionDetails}
+              handleOnChangeForHospitalDetails={handleOnChangeForHospitalDetails}
               handleChangeForTravelDetailsDynamicFields={handleChangeForTravelDetailsDynamicFields}
               handleChangeForContractedPersonsDynamicFields={handleChangeForContractedPersonsDynamicFields}
               handleAddForTravelDetails={handleAddForTravelDetails}
@@ -1046,8 +1138,11 @@ const TravellerInformationContainer = (props) => {
               handleRemoveForContractedFields={handleRemoveForContractedFields}
               handleAddressFieldChanges={handleAddressFieldInput}
               handleAddressFieldsOnValueChange={handleAddressFieldValuesOnChange}
+              handleHospitalFieldInput={handleHospitalFieldInput}
+              handleHospitalFieldOnChange={handleHospitalFieldOnChange}
               handleSave={handleSave}
               locationDetails={locationsList.locationsByType}
+              hospitalDetailsList={hospitalDetailsList.hospitalDetails}
               addContractedPersonError={addContractedPersonResponse.addContractedPersonError}
               handleToastClose={handleToastClose}
               showError={showError}

@@ -110,7 +110,11 @@ const DashboardContainer = (props) => {
 
   if (selectedTab === 0) {
     return getElementsToRender();
-  } else if (selectedTab === 1) return <ReportComponent />;
+  } else if (selectedTab === 1) {
+    return <ReportComponent />;
+  } else if (selectedTab === 2) {
+    return <div style={{ textAlign: 'center', fontSize: '20px', marginTop: '10%', textTransform: 'uppercase' }}>Map View is in Progress</div>;
+  }
 };
 
 DashboardContainer.propTypes = {

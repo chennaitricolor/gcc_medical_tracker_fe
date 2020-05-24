@@ -130,11 +130,9 @@ const useStyles = makeStyles(() => ({
     '.traveller-information-callFailureReason': {
       display: 'inline-block',
     },
-    '.traveller-information-healthStatus': {
-      display: 'inline-block',
-    },
     '.traveller-information-visitedHospital': {
-      display: 'inline-block',
+      display: 'inline-grid',
+      width: '300px',
     },
     '.traveller-information-currentAddressSame': {
       display: 'inline-block',
@@ -378,6 +376,8 @@ function renderDropDownFieldForAsyncAPICall(
     dropDownValues = dropDownValues.map((dropDownValue) => dropDownValue['street']);
   } else if (key === 'area') {
     dropDownValues = dropDownValues.map((dropDownValue) => dropDownValue['area']);
+  } else if (key === 'hospitalName') {
+    dropDownValues = dropDownValues.map((dropDownValue) => dropDownValue['name']);
   }
   dropDownValues = [...new Set(dropDownValues)];
   return (
@@ -600,8 +600,6 @@ const callFailureReasonRadioButton = [
   { label: 'Wrong Number', value: 'wrongNumber' },
 ];
 
-const personStatusRadioButton = [{ label: 'Quarantine', value: 'Home Quarantine' }];
-
 const genderList = [
   {
     label: 'Male',
@@ -620,6 +618,8 @@ const placeTypeList = ['Mall', 'Theater', 'Place Of Worship', 'Market', 'Others'
 const modeOfTravelList = ['Car', 'Bike', 'Public Transport', 'Others'];
 
 const typeOfAddress = ['Apartment', 'Home', 'Hospital', 'Others'];
+
+const personStatus = ['COVID Center', 'COVID Health Center', 'COVID Hospital', 'Home Quarantine', 'Positive', 'Negative', 'Others'];
 
 const TravellerInformationComponent = (props) => {
   const styles = useStyles();
@@ -890,13 +890,14 @@ const TravellerInformationComponent = (props) => {
             Person Health Details
             <Divider className={styles.informationDivider} />
             <div style={{ marginTop: '2%' }}>
-              {renderRadioButtonField(
+              {renderDropDownField(
                 'Person Status',
                 'healthStatus',
-                personStatusRadioButton,
+                personStatus,
                 props.transactionDetails,
                 props.handleOnChangeForTransactionDetails,
                 styles,
+                matchStyleForAddressDropdown,
               )}
               {renderTextField('Symptoms', 'symptoms', props.transactionDetails, props.handleOnChangeForTransactionDetails, styles)}
               {renderDateField(
@@ -908,6 +909,45 @@ const TravellerInformationComponent = (props) => {
                 props.handleOnChangeForTransactionDetails,
                 styles,
               )}
+            </div>
+            <div style={{ marginTop: '3%' }}>
+              {renderRadioButtonField(
+                'Does he/she visited hospital?',
+                'visitedHospital',
+                yesNoRadioButton,
+                props.hospitalDetails,
+                props.handleOnChangeForHospitalDetails,
+                styles,
+              )}
+              {props.hospitalDetails.visitedHospital === 'Y'
+                ? renderDropDownFieldForAsyncAPICall(
+                    'Hospital Name',
+                    'hospitalName',
+                    props.hospitalDetailsList !== undefined ? props.hospitalDetailsList.hospitals : [],
+                    props.hospitalDetails,
+                    props.handleHospitalFieldInput,
+                    props.handleHospitalFieldOnChange,
+                    styles,
+                    matchStyleForAddressDropdown,
+                    null,
+                    'Hospital Details',
+                    props.hospitalDetails,
+                    'hospitalName',
+                  )
+                : ''}
+              {props.hospitalDetails.visitedHospital === 'Y'
+                ? renderDateField(
+                    'Date Visited',
+                    'dateOfAdmission',
+                    'DD-MM-YYYY',
+                    'date',
+                    props.transactionDetails,
+                    props.handleOnChangeForTransactionDetails,
+                    styles,
+                  )
+                : ''}
+            </div>
+            <div style={{ marginTop: '2%' }}>
               {props.type === 'ADD'
                 ? renderRadioButtonField(
                     'Current Address Same as Permanent',
@@ -1023,21 +1063,6 @@ const TravellerInformationComponent = (props) => {
               ''
             )}
             <div>
-              <Button
-                variant={'outlined'}
-                style={{
-                  width: '300px',
-                  border: 'none',
-                  color: '#0084FF',
-                  textDecoration: 'underline',
-                  justifyContent: 'left',
-                  padding: '0',
-                  marginTop: '2%',
-                }}
-                onClick={() => props.handleAddForTravelDetails()}
-              >
-                Add Travel Details
-              </Button>
               {props.travelDetails.map((field, idx) => {
                 return (
                   <div key={`${field}-${idx}`} className={styles.dynamicFields + ' ' + `${idx}`}>
@@ -1183,27 +1208,26 @@ const TravellerInformationComponent = (props) => {
                   </div>
                 );
               })}
+              <div style={{ display: 'inline-block', marginTop: '1%' }}>
+                <Button
+                  variant={'outlined'}
+                  style={{
+                    width: '300px',
+                    border: 'none',
+                    color: '#0084FF',
+                    textDecoration: 'underline',
+                    justifyContent: 'left',
+                    padding: '0',
+                    marginTop: '2%',
+                  }}
+                  onClick={() => props.handleAddForTravelDetails()}
+                >
+                  Add Travel Details
+                </Button>
+              </div>
             </div>
           </div>
-
           <div>
-            <div style={{ display: 'inline-block', marginTop: '1%' }}>
-              <Button
-                variant={'outlined'}
-                style={{
-                  width: '300px',
-                  border: 'none',
-                  color: '#0084FF',
-                  textDecoration: 'underline',
-                  justifyContent: 'left',
-                  padding: '0',
-                  marginTop: '2%',
-                }}
-                onClick={() => props.handleAddForContractedFields()}
-              >
-                Add Contracted Persons
-              </Button>
-            </div>
             {props.contractedFields.map((field, idx) => {
               return (
                 <div key={`${field}-${idx}`} className={styles.dynamicFields + ' ' + `${idx}`}>
@@ -1361,6 +1385,23 @@ const TravellerInformationComponent = (props) => {
                 </div>
               );
             })}
+            <div style={{ display: 'inline-block', marginTop: '1%' }}>
+              <Button
+                variant={'outlined'}
+                style={{
+                  width: '300px',
+                  border: 'none',
+                  color: '#0084FF',
+                  textDecoration: 'underline',
+                  justifyContent: 'left',
+                  padding: '0',
+                  marginTop: '2%',
+                }}
+                onClick={() => props.handleAddForContractedFields()}
+              >
+                Add Contracted Persons
+              </Button>
+            </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <Button variant="contained" style={{ width: '300px', marginTop: '2%' }} onClick={props.handleSave}>
@@ -1399,9 +1440,11 @@ TravellerInformationComponent.propTypes = {
   transactionDetails: PropTypes.object,
   travelDetails: PropTypes.array,
   contractedFields: PropTypes.array,
+  hospitalDetails: PropTypes.object,
   handleOnChangeForBasicDetails: PropTypes.func,
   handleOnChangeForCallDetails: PropTypes.func,
   handleOnChangeForTransactionDetails: PropTypes.func,
+  handleOnChangeForHospitalDetails: PropTypes.func,
   handleChangeForTravelDetailsDynamicFields: PropTypes.func,
   handleChangeForContractedPersonsDynamicFields: PropTypes.func,
   handleAddForTravelDetails: PropTypes.func,
@@ -1411,7 +1454,10 @@ TravellerInformationComponent.propTypes = {
   handleAddressFieldChanges: PropTypes.func,
   handleSave: PropTypes.func,
   locationDetails: PropTypes.any,
+  hospitalDetailsList: PropTypes.any,
   handleAddressFieldsOnValueChange: PropTypes.func,
+  handleHospitalFieldInput: PropTypes.func,
+  handleHospitalFieldOnChange: PropTypes.func,
   addContractedPersonError: PropTypes.string,
   handleToastClose: PropTypes.func,
   showError: PropTypes.bool,

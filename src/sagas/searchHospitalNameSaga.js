@@ -1,21 +1,21 @@
 import { put, call } from 'redux-saga/effects';
-import actions from '../actions/GetLocationsByType';
+import actions from '../actions/searchHospitalListAction';
 import { apiUrls } from '../utils/constants';
 import { callFetchApi } from '../services/api';
 import routeToPathAction from '../actions/RouteToPathAction';
 
-export default function* getLocationsByType(action) {
+export default function* searchHospitalNameSaga(action) {
   try {
-    let api_url = `${apiUrls.locationsByType}`;
+    let api_url = `${apiUrls.searchHospitalName}`;
     const response = yield call(callFetchApi, api_url, action.payload.param, 'GET');
     if (response.data !== undefined) {
       yield put({
-        type: actions.GET_LOCATIONS_BY_TYPE_SUCCESS,
+        type: actions.SEARCH_HOSPITAL_DETAILS_SUCCESS,
         payload: response.data,
       });
     } else {
       yield put({
-        type: actions.GET_LOCATIONS_BY_TYPE_FAILURE,
+        type: actions.SEARCH_HOSPITAL_DETAILS_FAILURE,
         payload: 'Error in fetching Data',
       });
     }
@@ -27,7 +27,7 @@ export default function* getLocationsByType(action) {
       });
     } else {
       yield put({
-        type: actions.GET_LOCATIONS_BY_TYPE_FAILURE,
+        type: actions.SEARCH_HOSPITAL_DETAILS_FAILURE,
         payload: 'Error in fetching Data',
       });
     }
