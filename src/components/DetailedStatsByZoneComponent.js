@@ -69,11 +69,13 @@ const useStyles = makeStyles(() => ({
 
 export const DetailedStatsByZoneComponent = (props) => {
   const classes = useStyles();
-  const { handleSearchTextChange, handleFilterChange, handleWardSelection, selectedWard, personsList, onRowClick } = props;
+  const { handleSearchTextChange, handleFilterChange, handleWardSelection, selectedWard, searchText } = props;
 
   const getWardsList = (wards) => {
     return wards !== undefined && wards.length > 0 ? wards.map((ward) => ward) : [];
   };
+
+  console.log('this is also called');
 
   return (
     <div className={classes.root}>
@@ -107,7 +109,7 @@ export const DetailedStatsByZoneComponent = (props) => {
         </Grid>
         <Grid item xs={9} className={classes.grid}>
           <PatientsListHeaderComponent handleFilterChange={handleFilterChange} handleSearchTextChange={handleSearchTextChange} />
-          <PatientsListComponent personsList={personsList} onRowClick={onRowClick} />
+          <PatientsListComponent selectedWard={props.selectedWard} searchText={searchText} handleOpenForDialog={props.handleOpenForDialog}/>
         </Grid>
       </Grid>
     </div>
@@ -115,12 +117,12 @@ export const DetailedStatsByZoneComponent = (props) => {
 };
 
 DetailedStatsByZoneComponent.propTypes = {
-  handleSearchTextChange: PropTypes.func.isRequired,
-  handleFilterChange: PropTypes.func.isRequired,
   wardsList: PropTypes.array,
   handleWardSelection: PropTypes.func.isRequired,
   selectedWard: PropTypes.string,
-  personsList: PropTypes.array,
+  handleFilterChange: PropTypes.func,
+  handleSearchTextChange: PropTypes.func,
+  handleOpenForDialog: PropTypes.func
 };
 
 export default DetailedStatsByZoneComponent;

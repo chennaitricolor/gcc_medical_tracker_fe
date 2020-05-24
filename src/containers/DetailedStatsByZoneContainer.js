@@ -15,9 +15,9 @@ const loadingComponentStyle = {
 };
 
 const DetailedStatsByZoneContainer = (props) => {
+  //const personsByWard = useSelector((state) => state.getPersonsByWardReducer);
   const [searchText, setSearchText] = useState('');
-  const personsByWard = useSelector((state) => state.getPersonsByWardReducer);
-  const dispatch = useDispatch();
+
 
   const handleSearchTextChange = (event) => {
     setSearchText(event.target.value);
@@ -25,21 +25,7 @@ const DetailedStatsByZoneContainer = (props) => {
 
   const handleFilterChange = () => {};
 
-  const getPersonsByWardFromAPI = (personsByWard) => {
-    if (personsByWard.personsByWard !== undefined && personsByWard.personsByWard.success) {
-      const personsList = personsByWard.personsByWard.persons;
-      return searchText !== ''
-        ? personsList.filter(
-            (data) =>
-              (data.name !== undefined && data.name !== '' && data.name.toLowerCase().includes(searchText.toLowerCase())) ||
-              (data.phoneNumber !== undefined && data.phoneNumber !== '' && data.phoneNumber.includes(searchText)),
-          )
-        : personsList;
-    }
-    return [];
-  };
-
-  const getElementsToRender = () => {
+/*  const getElementsToRender = () => {
     const getPersonsByWard = personsByWard;
     if (getPersonsByWard !== undefined && getPersonsByWard.isLoading) {
       return <LoadingComponent isLoading={getPersonsByWard.isLoading} style={loadingComponentStyle} />;
@@ -55,34 +41,35 @@ const DetailedStatsByZoneContainer = (props) => {
           )}
 
           <DetailedStatsByZoneComponent
-            handleSearchTextChange={handleSearchTextChange}
-            handleFilterChange={handleFilterChange}
             wardsList={props.wards}
             handleWardSelection={props.handleWardSelection}
             selectedWard={props.selectedWard}
-            personsList={getPersonsByWardFromAPI(personsByWard)}
-            onRowClick={onRowClick}
+            handleFilterChange={handleFilterChange}
+            handleSearchTextChange={handleSearchTextChange}
+            searchText={searchText}
           />
         </div>
       );
     }
-  };
+  }; */
 
-  const onRowClick = (event, rowData) => {
-    dispatch({
-      type: 'GET_PERSONS_DETAILS',
-      payload: {
-        personId: rowData.person_identifier,
-      },
-    });
-    props.handleOpenForDialog('UPDATE', rowData);
-  };
 
-  return getElementsToRender();
+  return (<div>
+    <DetailedStatsByZoneComponent
+        wardsList={props.wards}
+        handleWardSelection={props.handleWardSelection}
+        selectedWard={props.selectedWard}
+        handleFilterChange={handleFilterChange}
+        handleSearchTextChange={handleSearchTextChange}
+        handleOpenForDialog={props.handleOpenForDialog}
+        searchText={searchText}
+    />
+  </div>);
 };
 
 DetailedStatsByZoneContainer.propTypes = {
   wards: PropTypes.any,
+  selectedWard: PropTypes.any
 };
 
 export default DetailedStatsByZoneContainer;
