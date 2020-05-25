@@ -25,5 +25,6 @@ export const apiUrls = {
   locationsByType: '/medicaltracker/form/locations/street_name',
   searchHospitalName: '/medicaltracker/form/hospitals',
   updateContractedPersons: '/medicaltracker/form/persons/:id',
-  getDashboardEmbedUrl: '/medicaltracker/dashboard/reports/gcc-dashboard'
+  getDashboardEmbedUrl: '/medicaltracker/dashboard/reports/gcc-dashboard',
+  getPatientsLocation: '/medicaltracker/dashboard/reports/map',
 };

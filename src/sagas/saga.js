@@ -9,18 +9,20 @@ import addContractedPersonsAction from '../actions/addContractedPersonsAction';
 import getLocationsByTypeAction from '../actions/GetLocationsByType';
 import searchHospitalListAction from '../actions/searchHospitalListAction';
 import updateContractedPersonsAction from '../actions/updateContractedPersonsAction';
+import getPatientsLocationAction from '../actions/getPatientsLocation';
 import loginSaga from './LoginSaga';
 import routesSaga from './RouteUrlsSaga';
 import resetPasswordSaga from './ResetPasswordSaga';
 import getAllZones from './GetAllZonesSaga';
 import getPersonsByWard from './GetPersonsByWardSaga';
-import getPersonsDetailSaga from "./getPersonsDetailSaga";
+import getPersonsDetailSaga from './getPersonsDetailSaga';
 import getLocationsByType from './GetLocationsByTypeSaga';
 import addContractedPersonsSaga from './addContractedPersonSaga';
 import updateContractedPersonsSaga from './updateContractedPersonsSaga';
 import getDashboardEmbedAction from '../actions/GetDashboardEmbedAction';
 import getDashboardEmbedUrl from './GetDashboardEmbedSaga';
-import searchHospitalNameSaga from "./searchHospitalNameSaga";
+import searchHospitalNameSaga from './searchHospitalNameSaga';
+import getPatientsLocationSaga from './getPatientsLocationSaga';
 
 export default function* saga() {
   yield takeLatest(loginActions.INITIATE_LOGIN, loginSaga);
@@ -34,4 +36,5 @@ export default function* saga() {
   yield takeLatest(searchHospitalListAction.SEARCH_HOSPITAL_DETAILS, searchHospitalNameSaga);
   yield takeLatest(updateContractedPersonsAction.UPDATE_CONTRACTED_PERSONS, updateContractedPersonsSaga);
   yield takeLatest(getDashboardEmbedAction.GET_DASHBOARD_EMBED_URL, getDashboardEmbedUrl);
+  yield takeLatest(getPatientsLocationAction.GET_PATIENTS_LOCATION, getPatientsLocationSaga);
 }
