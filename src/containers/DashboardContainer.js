@@ -8,6 +8,7 @@ import Alert from '@material-ui/lab/Alert';
 import DetailedStatsByZoneContainer from './DetailedStatsByZoneContainer';
 import getPersonsByWardActions from '../actions/GetPersonsByWardAction';
 import ReportComponent from '../components/ReportComponent';
+import MapContainer from './MapContainer';
 
 const loadingComponentStyle = {
   top: '40%',
@@ -113,7 +114,7 @@ const DashboardContainer = (props) => {
   } else if (selectedTab === 1) {
     return <ReportComponent />;
   } else if (selectedTab === 2) {
-    return <div style={{ textAlign: 'center', fontSize: '20px', marginTop: '10%', textTransform: 'uppercase' }}>Map View is in Progress</div>;
+    return <MapContainer />;
   }
 };
 
