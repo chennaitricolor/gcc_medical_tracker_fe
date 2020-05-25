@@ -75,7 +75,7 @@ export const MapWrappedComponent = withScriptjs(
           >
             <div>
               {selectedEntry.patients.map((patient) => (
-                <div style={{ marginBottom: '1vh' }}>
+                <div key={patient.name} style={{ marginBottom: '1vh' }}>
                   <h2 style={{ margin: 0 }}>
                     Patient:{patient.name} ({patient.gender})
                   </h2>
