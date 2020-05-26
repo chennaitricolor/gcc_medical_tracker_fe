@@ -6,7 +6,7 @@ export const MapContainer = (props) => {
   const getPatientsLocation = useSelector((state) => state.getPatientsLocationReducer);
 
   return (
-    <div style={{ height: '100vh' }}>
+    <div style={{ height: '95vh' }}>
       <MapWrappedComponent
         googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${
           process.env.REACT_APP_GOOGLE_KEY !== undefined ? process.env.REACT_APP_GOOGLE_KEY : 'AIzaSyDFIVNy3804eaed33ukPN4zUURrJpZFJJY'

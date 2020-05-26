@@ -5,6 +5,19 @@ import { useDispatch } from 'react-redux';
 import actions from '../actions/getPatientsLocation';
 import toastActions from '../actions/ToastAction';
 import ToastComponent from '../components/ToastComponent';
+import RedMarkerIcon from '../images/MarkerIcons/Red.png';
+import OrangeMarkerIcon from '../images/MarkerIcons/Orange.png';
+import YellowMarkerIcon from '../images/MarkerIcons/Yellow.png';
+
+const getMarkerIcon = (count) => {
+  if (count >= 30) {
+    return RedMarkerIcon;
+  }
+  if (count >= 20) {
+    return OrangeMarkerIcon;
+  }
+  return YellowMarkerIcon;
+};
 
 export const MapWrappedComponent = withScriptjs(
   withGoogleMap((props) => {
@@ -49,6 +62,7 @@ export const MapWrappedComponent = withScriptjs(
               onClick={() => {
                 setSelectedEntry({ coordinates: [lat, lng], patients });
               }}
+              icon={{ url: getMarkerIcon(patients.length), scaledSize: new window.google.maps.Size(35, 35) }}
             />
           );
         });
@@ -73,11 +87,11 @@ export const MapWrappedComponent = withScriptjs(
               lng: selectedEntry.coordinates[1],
             }}
           >
-            <div>
+            <div style={{ maxHeight: '50vh' }}>
               {selectedEntry.patients.map((patient) => (
                 <div key={patient.name} style={{ marginBottom: '1vh' }}>
                   <h2 style={{ margin: 0 }}>
-                    Patient:{patient.name} ({patient.gender})
+                    {patient.name} ({patient.gender})
                   </h2>
                   <h4 style={{ margin: 0 }}>Phone:{patient.phone}</h4>
                 </div>
