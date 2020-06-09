@@ -75,7 +75,7 @@ export const MapWrappedComponent = withScriptjs(
       return <ToastComponent toastMessage={patientsLocationError} openToast handleClose={handleToastClose} toastVariant={'error'} />;
     }
     return (
-      <GoogleMap defaultZoom={10} defaultCenter={{ lat: 13.0827, lng: 80.2707 }}>
+      <GoogleMap defaultZoom={10} defaultCenter={{ lat: 13.0827, lng: 80.2707 }} onTilesLoaded={props.onLoad}>
         {getMarkers()}
         {selectedEntry && (
           <InfoWindow
